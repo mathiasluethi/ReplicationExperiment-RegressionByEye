@@ -8,7 +8,7 @@
 
     </head>
     <body>
-        <canvas id="myCanvas" width="200" height="200" >
+        <canvas id="myCanvas" width="300" height="525" >
         </canvas>
 
         <div class="history">
@@ -16,7 +16,7 @@
             <span id="demo">
         </div>
         <div class="slidecontainer">
-            <input type="range" min="1" max="100" value="50" class="slider" id="myRange">
+            <input type="range" min="0" max="100" value="50" class="slider" id="myRange">
         </div>
         <button type="button" onclick="next()">Submit</button>
 
@@ -26,6 +26,16 @@
             let output = document.getElementById("demo");
 
             let canvas = document.getElementById("myCanvas");
+            ctxb = canvas.getContext("2d");
+            
+            var background = new Image();
+            background.src = "trend-bias/line/scatter/S0.2m-1.0.png";
+
+            // Make sure the image is loaded first otherwise nothing will draw.
+            background.onload = function(){
+                ctxb.drawImage(background,0,0,300,525);   
+            }
+
             let x1, x2, y1, y2;
             
             let history = [];
@@ -36,9 +46,9 @@
             slider.oninput = function() {
                 output.innerHTML = this.value;
                 x1 = 0;
-                x2 = 200 - 2 * this.value;
-                y1 = 200
-                y2 = 2 * this.value;
+                y1 = 525 - 5.25 * this.value;
+                x2 = 300
+                y2 = 5.25 * this.value;
                 drawLinearRegression(x1, x2, y1, y2);
             }
 
@@ -51,11 +61,11 @@
             // Canvas drawing logic
             function drawLinearRegression(x1, x2, y1, y2) {
                 let ctx = canvas.getContext("2d");
-                ctx.clearRect(0, 0, 200, 200);
-
+                ctx.clearRect(0, 0, 300, 525);
+                ctxb.drawImage(background,0,0,300,525);  
                 ctx.beginPath();
-                ctx.moveTo(x1, x2);
-                ctx.lineTo(y1, y2);
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(x2, y2);
                 ctx.stroke();
             }
             
