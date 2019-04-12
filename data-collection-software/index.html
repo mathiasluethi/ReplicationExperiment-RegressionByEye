@@ -5,13 +5,9 @@
         <title>Slider Example</title>
 
         <link rel="stylesheet" href="styles.css"/>
-        <script src="jquery/jquery-3.4.0.min.js"></script>
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-csv/0.8.9/jquery.csv.js"></script>
 
     </head>
     <body>
-        <input id="csv" type="file">
-        <button type="button" onclick="start()">Start</button>
 
         <canvas id="myCanvas" width="300" height="525"></canvas>
 
@@ -36,7 +32,7 @@
             ctxb = canvas.getContext("2d");
             
             var background = new Image();
-            background.src = "trend-bias/line/scatter/S0.2m-1.0.png";
+            background.src = "data/line/scatter/S0.2m-1.0.png";
 
             // Make sure the image is loaded first otherwise nothing will draw.
             background.onload = function(){
