@@ -20,7 +20,11 @@
         <div class="slidecontainer">
             <input type="range" min="-1" max="1" step="0.01" value="0" class="slider" id="myRange">
         </div>
-        <button type="button" onclick="next()">Submit</button>
+
+        <div class="buttonContainer">
+            <button type="button" onclick="previous()">Previous</button>
+            <button type="button" onclick="next()">Next</button>
+        </div>
 
 
 
@@ -34,6 +38,8 @@
 
             output.innerHTML = slider.value;
 
+            let data;
+            let taskIndex = 0;
             let task;
             let background;
             let line;
@@ -41,6 +47,24 @@
             let x0, x1, y0, y1;
 
             setupExperiment();
+
+            // Setup experiment
+            async function setupExperiment() {
+                let d = loadData();
+                data = await d;
+
+                newGraph();
+            }
+
+            function newGraph() {
+                console.log(task)
+                task = data[taskIndex];
+                line = task.graphtype;
+                slider.value = 0;
+                output.innerHTML = 0;
+                loadImage(task);
+                correctGraphSlope = task.m;
+            }
 
             // Load in the csv file and convert it to an object
             async function loadData() {
@@ -73,25 +97,10 @@
                 background.onload = function(){
                     ctxb.drawImage(background,0,0,300,525);   
                 }
-                console.log(background)
-            }
-            
-            // Setup experiment
-            async function setupExperiment() {
-                let d = loadData();
-                let data = await d;
-                task = data[0];
-                line = task.graphtype;
-                console.log(task)
-                loadImage(task);
-                correctGraphSlope = task.m;
-                return data;
-                
             }
             
             // Update the current slider value (each time you drag the slider handle)
             slider.oninput = function() {
-                console.log(line)
                 sliderValue = this.value;
                 output.innerHTML = sliderValue;
                 x1 = 0;
@@ -105,9 +114,27 @@
                 }
             }
 
-            // Store the selected slider value to an array
+            // Change the data based on input and move to the new task
             function next() {
-                history.push(slider.value);
+                data[taskIndex].answer = slider.value;
+                // data[taskIndex].error = slider.value - data[taskIndex].m;
+                
+                taskIndex = taskIndex + 1;
+                
+                newGraph();
+            }
+
+            // Change the data based on input and move to the new task
+            function previous() {
+                if (taskIndex >= 1) {
+                    data[taskIndex].answer = slider.value;
+                
+                    taskIndex = taskIndex - 1;
+                    
+                    newGraph();
+                } else {
+                    alert("You can't move back. This is the first task.")
+                }
             }
 
             // Canvas drawing logic
