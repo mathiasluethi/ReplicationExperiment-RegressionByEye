@@ -136,13 +136,17 @@
             function next() {
                 data[taskIndex].answer = slider.value;
                 
-                if (taskIndex >= 5) {
-                    let csvData = saveData();
-                    var encodedUri = encodeURI(csvData);
-                    window.open(encodedUri);
+                if (slider.value === 0) {
+                    alert("Please change the slope before submitting your answer.");
                 } else {
-                    taskIndex = taskIndex + 1;
-                    newGraph();
+                    if (taskIndex >= 5) {
+                        let csvData = saveData();
+                        var encodedUri = encodeURI(csvData);
+                        window.open(encodedUri);
+                    } else {
+                        taskIndex = taskIndex + 1;
+                        newGraph();
+                    }
                 }
             }
 
