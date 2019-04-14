@@ -56,6 +56,7 @@
                 newGraph();
             }
 
+            // Draws a new graph with background image, resets the slider
             function newGraph() {
                 console.log(task)
                 task = data[taskIndex];
@@ -87,6 +88,25 @@
                 });
                 return await data;
             }
+
+            // Save experiment data to csv
+            function saveData() {
+                var array = typeof data != 'object' ? JSON.parse(data) : data;
+                var str = '';
+
+                for (var i = 0; i < array.length; i++) {
+                    var line = '';
+                    for (var index in array[i]) {
+                        if (line != '') line += ','
+
+                        line += array[i][index];
+                    }
+
+                    str += line + '\r\n';
+                }
+
+                return str;
+            }
             
             // Load images
             function loadImage(task) {
@@ -115,11 +135,15 @@
             // Change the data based on input and move to the new task
             function next() {
                 data[taskIndex].answer = slider.value;
-                // data[taskIndex].error = slider.value - data[taskIndex].m;
                 
-                taskIndex = taskIndex + 1;
-                
-                newGraph();
+                if (taskIndex >= 5) {
+                    let csvData = saveData();
+                    var encodedUri = encodeURI(csvData);
+                    window.open(encodedUri);
+                } else {
+                    taskIndex = taskIndex + 1;
+                    newGraph();
+                }
             }
 
             // Change the data based on input and move to the new task
