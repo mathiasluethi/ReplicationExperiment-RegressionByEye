@@ -44,6 +44,7 @@
             let background;
             let line;
             let correctGraphSlope;
+            let sliderValue;
             let x0, x1, y0, y1;
 
             setupExperiment();
@@ -57,7 +58,6 @@
             }
 
             function newGraph() {
-                console.log(task)
                 task = data[taskIndex];
                 line = task.graphtype;
                 slider.value = 0;
@@ -172,8 +172,36 @@
                 axes.y0 = .5 + .5*canvas.height; // y0 pixels from top to y=0
                 axes.scale = 40;                 // 40 pixels from x=0 to x=1 (length of graph, scaled up)
                 axes.doNegativeX = true;
+                drawQuadraticGraph(ctx)
+                // funGraph(ctx,axes,fun1,"black",2); 
+            }
 
-                funGraph(ctx,axes,fun1,"black",2); 
+            function drawQuadraticGraph (ctx) {
+                let m = correctGraphSlope;
+                let b = scale(m, -1, 1, 1, 0);
+                let resolution = 100;
+                let X1;
+                let Y1;
+                let X2;
+                let Y2;
+                ctx.beginPath();
+                ctx.lineWidth = 3;
+                ctx.strokeStyle = 'black';
+                for (var i = 0; i<resolution; i++) {
+                    X1 = scale(i, 0, resolution, 0, 1);
+                    Y1 = m*Math.sqrt(X1)+b;
+                    X2 = scale(i+1, 0, resolution, 0, 1);
+                    Y2 = m*Math.sqrt(X2)+b;
+                // move to starting position
+                if (i==0) ctx.moveTo(i*300,Y1*525);
+                // start drawing
+                else ctx.lineTo(X2*300,Y2*525);
+                }
+                ctx.stroke();
+            }
+
+            const scale = (num, in_min, in_max, out_min, out_max) => {
+                return (num - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
             }
 
             function funGraph (ctx,axes,func,color,thick) {
