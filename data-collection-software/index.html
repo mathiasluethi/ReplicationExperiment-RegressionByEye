@@ -26,13 +26,6 @@
 
         <script type="text/javascript">
 
-            // get these values from csv
-            let line = "quadratic";
-            let correctGraphSlope = -1;
-            var background = new Image();
-            background.src = "data/line/scatter/S0.2m-1.0.png";
-            background.src = "data/P1/quad/areatrend/S0.25m-0.7.png";
-
             let slider = document.getElementById("myRange");
             let output = document.getElementById("demo");
 
@@ -40,6 +33,13 @@
             ctxb = canvas.getContext("2d");
 
             output.innerHTML = slider.value;
+
+            let task;
+            let background;
+            let line;
+            let correctGraphSlope;
+            let x0, x1, y0, y1;
+
             setupExperiment();
 
             // Load in the csv file and convert it to an object
@@ -66,29 +66,32 @@
             
             // Load images
             function loadImage(task) {
-                var background = new Image();
+                background = new Image();
                 background.src = task.src;
 
                 // Make sure the image is loaded first otherwise nothing will draw.
                 background.onload = function(){
                     ctxb.drawImage(background,0,0,300,525);   
                 }
+                console.log(background)
             }
             
             // Setup experiment
             async function setupExperiment() {
                 let d = loadData();
                 let data = await d;
-                let task = data[0];
-                let line = task.graphtype;
-                
+                task = data[0];
+                line = task.graphtype;
+                console.log(task)
                 loadImage(task);
+                correctGraphSlope = task.m;
                 return data;
                 
             }
             
             // Update the current slider value (each time you drag the slider handle)
             slider.oninput = function() {
+                console.log(line)
                 sliderValue = this.value;
                 output.innerHTML = sliderValue;
                 x1 = 0;
@@ -129,37 +132,39 @@
                 }
                 return quadraticFunction;
             }
+
             function drawLine() {
-            var canvas = document.getElementById("myCanvas");
-            if (null==canvas || !canvas.getContext) return;
+                var canvas = document.getElementById("myCanvas");
+                if (null==canvas || !canvas.getContext) return;
 
-            var axes={}, ctx=canvas.getContext("2d");
-            ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-            ctxb.drawImage(background,0,0,ctx.canvas.width,ctx.canvas.height); 
-            // position of axes (in the middle of canvas)
-            axes.x0 = .5 + .5*canvas.width;  // x0 pixels from left to x=0
-            axes.y0 = .5 + .5*canvas.height; // y0 pixels from top to y=0
-            axes.scale = 40;                 // 40 pixels from x=0 to x=1 (length of graph, scaled up)
-            axes.doNegativeX = true;
+                var axes={}, ctx=canvas.getContext("2d");
+                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                ctxb.drawImage(background,0,0,ctx.canvas.width,ctx.canvas.height); 
+                // position of axes (in the middle of canvas)
+                axes.x0 = .5 + .5*canvas.width;  // x0 pixels from left to x=0
+                axes.y0 = .5 + .5*canvas.height; // y0 pixels from top to y=0
+                axes.scale = 40;                 // 40 pixels from x=0 to x=1 (length of graph, scaled up)
+                axes.doNegativeX = true;
 
-            funGraph(ctx,axes,fun1,"black",2); 
+                funGraph(ctx,axes,fun1,"black",2); 
             }
 
             function funGraph (ctx,axes,func,color,thick) {
-            var xx, yy, dx=4, x0=axes.x0, y0=axes.y0, scale=axes.scale;
-            var iMax = Math.round((ctx.canvas.width-x0)/dx);
-            var iMin = axes.doNegativeX ? Math.round(-x0/dx) : 0;
-            ctx.beginPath();
-            ctx.lineWidth = thick;
-            ctx.strokeStyle = color;
+                var xx, yy, dx=4, x0=axes.x0, y0=axes.y0, scale=axes.scale;
+                var iMax = Math.round((ctx.canvas.width-x0)/dx);
+                var iMin = axes.doNegativeX ? Math.round(-x0/dx) : 0;
+                ctx.beginPath();
+                ctx.lineWidth = thick;
+                ctx.strokeStyle = color;
 
-            for (var i=iMin;i<=iMax;i++) {
-            xx = dx*i; yy = scale*func(xx/scale,2);
-            if (i==iMin) ctx.moveTo(x0+xx,y0-yy);
-            else         ctx.lineTo(x0+xx,y0-yy);
+                for (var i=iMin;i<=iMax;i++) {
+                    xx = dx*i; yy = scale*func(xx/scale,2);
+                    if (i==iMin) ctx.moveTo(x0+xx,y0-yy);
+                    else         ctx.lineTo(x0+xx,y0-yy);
+                }
+                ctx.stroke();
             }
-            ctx.stroke();
-            }
+            
         </script>
 
     </body>
