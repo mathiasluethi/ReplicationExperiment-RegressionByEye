@@ -103,14 +103,12 @@
             slider.oninput = function() {
                 sliderValue = this.value;
                 output.innerHTML = sliderValue;
-                x1 = 0;
-                y1 = 262.5 + 150 * this.value;
-                x2 = 300
-                y2 = 262.5 + -150 * this.value;
                 if (line === "line") {
-                    drawLinearRegression(x1, x2, y1, y2);
+                    drawLinearRegression(this.value);
                 } else if (line === "quad") {
-                    drawLine();
+                    drawQuadraticRegression();
+                } else if (line === "trig") {
+                    drawTrigonometricRegression(this.value)
                 }
             }
 
@@ -137,14 +135,54 @@
                 }
             }
 
-            // Canvas drawing logic
-            function drawLinearRegression(x1, x2, y1, y2) {
+            // Canvas drawing linear regression
+            function drawLinearRegression(m) {
+                x1 = 0;
+                y1 = 262.5 + 150 * m;
+                x2 = 300
+                y2 = 262.5 + -150 * m;
+
                 let ctx = canvas.getContext("2d");
                 ctx.clearRect(0, 0, 300, 525);
                 ctxb.drawImage(background,0,0,300,525);  
                 ctx.beginPath();
                 ctx.moveTo(x1, y1);
                 ctx.lineTo(x2, y2);
+                ctx.stroke();
+            }
+
+            // Canvas drawing trigonometric regression
+            function drawTrigonometricRegression(m) {
+                let ctx = canvas.getContext("2d");
+                ctx.clearRect(0, 0, 300, 525);
+                ctxb.drawImage(background,0,0,300,525);
+
+                ctx.beginPath();
+                ctx.moveTo(0, 262.5 - (-150 * m));
+                for (var angle = 0; angle < 180; angle += 5){
+                    var y = 262.5 - (-150 * m) * (Math.cos((Math.PI / 180) * angle))
+                    var x = (0 + angle) * 1.72;
+                    ctx.lineJoin = 'round';
+                    console.log(x, y)
+                    ctx.lineTo(x,y);
+                }
+                ctx.stroke();
+            }
+
+            function drawQuadraticRegression(m) {
+                let ctx = canvas.getContext("2d");
+                ctx.clearRect(0, 0, 300, 525);
+                ctxb.drawImage(background,0,0,300,525);
+
+                ctx.beginPath();
+                ctx.moveTo(0, 262.5);
+                for (var angle = 0; angle < 300; angle += 1){
+                    var y = m * Math.sqrt(angle*5) + 262.5
+                    var x = angle;
+                    ctx.lineJoin = 'round';
+                    console.log(x, y)
+                    ctx.lineTo(x,y);
+                }
                 ctx.stroke();
             }
 
