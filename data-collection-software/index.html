@@ -64,7 +64,7 @@
                 slider.value = 0;
                 output.innerHTML = 0;
                 loadImage(task);
-                correctGraphSlope = task.m;
+                correctGraphSlope = task.m * task.sign;
             }
 
             // Load in the csv file and convert it to an object
