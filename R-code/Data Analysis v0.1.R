@@ -67,14 +67,25 @@ summary(pairwise_main)
 #None are significant, the same as the study
 
 
-data %>% 
+
+g= data[ (data$unsignedError > quantile(data$unsignedError , 0.25 )) & (data$unsignedError < quantile(data$unsignedError , 0.75 )) , ]
+
+
+g %>%
   ggplot(aes(x = type, y = unsignedError))+
   stat_summary(fun.y = mean, geom = "point")+
   stat_summary(fun.data = mean_cl_normal, geom = "errorbar", width = 0) +
   expand_limits(x = 0, y = 0) +
   coord_flip() 
 
-# Our graph is different to that of the study, seems like the unsigned error is 0.02 higher for each type.
+# The variable in question is the interquartile mean, so the data is cut to remove the outer quartiles
+
+# checking the interquarile means
+
+library(plyr)
+r2<-ddply(data, .(type), summarize, mean=mean(unsignedError, 0.25))
+r2
+
 
 #H3
 
