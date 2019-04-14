@@ -63,7 +63,7 @@
                 slider.value = 0;
                 output.innerHTML = 0;
                 loadImage(task);
-                correctGraphSlope = task.m;
+                correctGraphSlope = task.m * task.sign;
             }
 
             // Load in the csv file and convert it to an object
@@ -189,15 +189,31 @@
                 ctx.strokeStyle = 'black';
                 for (var i = 0; i<resolution; i++) {
                     X1 = scale(i, 0, resolution, 0, 1);
-                    Y1 = m*Math.sqrt(X1)+b;
+                    Y1 = m*Math.pow(X1,2) + b;
+                    if (correctGraphSlope < 0) {
+                        Y1 = 1-(Y1);
+                    }
                     X2 = scale(i+1, 0, resolution, 0, 1);
-                    Y2 = m*Math.sqrt(X2)+b;
-                // move to starting position
-                if (i==0) ctx.moveTo(i*300,Y1*525);
+
+                    Y2 = m*Math.pow(X2,2) + b;
+                    if (correctGraphSlope < 0) {
+                        Y2 = 1-(Y2);
+                    }
+                    console.log('sv: ', sliderValue, ' X2: ', X2, ' Y2: ', Y2);
+                ctx.moveTo(toScreenX(i/resolution),toScreenY(Y1));
                 // start drawing
-                else ctx.lineTo(X2*300,Y2*525);
+                ctx.lineTo(toScreenX((i+1)/resolution),toScreenY(Y2));
                 }
                 ctx.stroke();
+                console.log('correctGraphSlope: ', correctGraphSlope, ' b: ', b);
+            }
+
+            function toScreenY(dataY) {
+                return scale(dataY, 0, 1, 525-(2*5)-112.5, (2*5)+112.5);
+            }
+
+            function toScreenX(dataX) {
+                return scale(dataX, 0, 1, (2*5), 300-(2*5));
             }
 
             const scale = (num, in_min, in_max, out_min, out_max) => {
