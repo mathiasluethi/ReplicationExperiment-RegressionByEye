@@ -26,15 +26,18 @@
 
         <script type="text/javascript">
 
+            // get these values from csv
             let line = "quadratic";
-            
+            let correctGraphSlope = -1;
+            var background = new Image();
+            background.src = "data/line/scatter/S0.2m-1.0.png";
+            background.src = "data/P1/quad/areatrend/S0.25m-0.7.png";
+
             let slider = document.getElementById("myRange");
             let output = document.getElementById("demo");
 
             let canvas = document.getElementById("myCanvas");
             ctxb = canvas.getContext("2d");
-
-            let x1, x2, y1, y2;
 
             output.innerHTML = slider.value;
             setupExperiment();
@@ -86,9 +89,8 @@
             
             // Update the current slider value (each time you drag the slider handle)
             slider.oninput = function() {
-                output.innerHTML = this.value;
-                slope = this.value;
-                console.log('slope: ', slope);
+                sliderValue = this.value;
+                output.innerHTML = sliderValue;
                 x1 = 0;
                 y1 = 262.5 + 150 * this.value;
                 x2 = 300
@@ -117,16 +119,14 @@
             }
 
             function fun1(x) {
-                a = slope; // the steepness of curvature
-                b = 0.7; // the steepness of curvature
+                a = sliderValue; // the curvature
+                b = correctGraphSlope; // the existing linear slope of the graph
                 c = 0; // where 0 point is
-                d = 0;
-                if (slope>= 0) {
-                quadraticFunction = (Math.pow(a*x, 2)+c*x+d)/(1-b);
+                if (sliderValue >= 0) {
+                quadraticFunction = (Math.pow(a*x, 2)+b*x+c);
                 } else {
-                quadraticFunction = -(Math.pow(a*x, 2)+c*x+d)/(1-b);
+                quadraticFunction = -(Math.pow(a*x, 2)-b*x+c);
                 }
-                console.log(quadraticFunction);
                 return quadraticFunction;
             }
             function drawLine() {
