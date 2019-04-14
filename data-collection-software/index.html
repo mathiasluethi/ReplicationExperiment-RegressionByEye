@@ -5,6 +5,7 @@
         <title>Slider Example</title>
 
         <link rel="stylesheet" href="styles.css"/>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
 
     </head>
     <body>
@@ -13,11 +14,11 @@
 
         <div class="history">
             <span>m = </span>
-            <span id="demo">
+            <span id="demo"></span>
         </div>
 
         <div class="slidecontainer">
-            <input type="range" min="-1.75" max="1.75" step="0.01" value="0" class="slider" id="myRange">
+            <input type="range" min="-1" max="1" step="0.01" value="0" class="slider" id="myRange">
         </div>
         <button type="button" onclick="next()">Submit</button>
 
@@ -37,16 +38,54 @@
 
             let canvas = document.getElementById("myCanvas");
             ctxb = canvas.getContext("2d");
-            
-            // Make sure the image is loaded first, otherwise nothing will draw.
-            background.onload = function(){
-                ctxb.drawImage(background,0,0,300,525);  
-            }
 
-            let x1, x2, y1, y2;
-            let sliderValue;
-            let history = [];
             output.innerHTML = slider.value;
+            setupExperiment();
+
+            // Load in the csv file and convert it to an object
+            async function loadData() {
+                let data = $.get("./data/csvs/P1.csv").then(function(csv){
+                    var lines = csv.split("\n");
+                    var result = [];
+                    var headers = lines[0].split(",");
+
+                    for(var i=1; i<lines.length; i++){
+                        var obj = {};
+                        var currentline = lines[i].split(",");
+
+                        for(var j=0; j<headers.length; j++){
+                            obj[headers[j]] = currentline[j];
+                        }
+
+                        result.push(obj);
+                    }
+                    return result; 
+                });
+                return await data;
+            }
+            
+            // Load images
+            function loadImage(task) {
+                var background = new Image();
+                background.src = task.src;
+
+                // Make sure the image is loaded first otherwise nothing will draw.
+                background.onload = function(){
+                    ctxb.drawImage(background,0,0,300,525);   
+                }
+            }
+            
+            // Setup experiment
+            async function setupExperiment() {
+                let d = loadData();
+                let data = await d;
+                let task = data[0];
+                let line = task.graphtype;
+                
+                loadImage(task);
+                return data;
+                
+            }
             
             // Update the current slider value (each time you drag the slider handle)
             slider.oninput = function() {
@@ -56,9 +95,9 @@
                 y1 = 262.5 + 150 * this.value;
                 x2 = 300
                 y2 = 262.5 + -150 * this.value;
-                if (line === "linear") {
+                if (line === "line") {
                     drawLinearRegression(x1, x2, y1, y2);
-                } else if (line === "quadratic") {
+                } else if (line === "quad") {
                     drawLine();
                 }
             }
@@ -66,8 +105,6 @@
             // Store the selected slider value to an array
             function next() {
                 history.push(slider.value);
-                console.log(history);
-                
             }
 
             // Canvas drawing logic
