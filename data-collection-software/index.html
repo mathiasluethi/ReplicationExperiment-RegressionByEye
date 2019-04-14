@@ -106,9 +106,9 @@
                 if (line === "line") {
                     drawLinearRegression(this.value);
                 } else if (line === "quad") {
-                    drawQuadraticRegression();
+                    drawQuadraticRegression(this.value);
                 } else if (line === "trig") {
-                    drawTrigonometricRegression(this.value)
+                    drawTrigonometricRegression(this.value);
                 }
             }
 
@@ -163,69 +163,24 @@
                     var y = 262.5 - (-150 * m) * (Math.cos((Math.PI / 180) * angle))
                     var x = (0 + angle) * 1.72;
                     ctx.lineJoin = 'round';
-                    console.log(x, y)
                     ctx.lineTo(x,y);
                 }
                 ctx.stroke();
             }
 
+            // Canvas drawing quadratic regression
             function drawQuadraticRegression(m) {
                 let ctx = canvas.getContext("2d");
                 ctx.clearRect(0, 0, 300, 525);
                 ctxb.drawImage(background,0,0,300,525);
 
                 ctx.beginPath();
-                ctx.moveTo(0, 262.5);
+                ctx.moveTo(0, 260 + m * 155);
                 for (var angle = 0; angle < 300; angle += 1){
-                    var y = m * Math.sqrt(angle*5) + 262.5
                     var x = angle;
+                    var y = -m * Math.pow(angle/17.2, 2) + 260 + m * 155;
                     ctx.lineJoin = 'round';
-                    console.log(x, y)
                     ctx.lineTo(x,y);
-                }
-                ctx.stroke();
-            }
-
-            function fun1(x) {
-                a = sliderValue; // the curvature
-                b = correctGraphSlope; // the existing linear slope of the graph
-                c = 0; // where 0 point is
-                if (sliderValue >= 0) {
-                quadraticFunction = (Math.pow(a*x, 2)+b*x+c);
-                } else {
-                quadraticFunction = -(Math.pow(a*x, 2)-b*x+c);
-                }
-                return quadraticFunction;
-            }
-
-            function drawLine() {
-                var canvas = document.getElementById("myCanvas");
-                if (null==canvas || !canvas.getContext) return;
-
-                var axes={}, ctx=canvas.getContext("2d");
-                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-                ctxb.drawImage(background,0,0,ctx.canvas.width,ctx.canvas.height); 
-                // position of axes (in the middle of canvas)
-                axes.x0 = .5 + .5*canvas.width;  // x0 pixels from left to x=0
-                axes.y0 = .5 + .5*canvas.height; // y0 pixels from top to y=0
-                axes.scale = 40;                 // 40 pixels from x=0 to x=1 (length of graph, scaled up)
-                axes.doNegativeX = true;
-
-                funGraph(ctx,axes,fun1,"black",2); 
-            }
-
-            function funGraph (ctx,axes,func,color,thick) {
-                var xx, yy, dx=4, x0=axes.x0, y0=axes.y0, scale=axes.scale;
-                var iMax = Math.round((ctx.canvas.width-x0)/dx);
-                var iMin = axes.doNegativeX ? Math.round(-x0/dx) : 0;
-                ctx.beginPath();
-                ctx.lineWidth = thick;
-                ctx.strokeStyle = color;
-
-                for (var i=iMin;i<=iMax;i++) {
-                    xx = dx*i; yy = scale*func(xx/scale,2);
-                    if (i==iMin) ctx.moveTo(x0+xx,y0-yy);
-                    else         ctx.lineTo(x0+xx,y0-yy);
                 }
                 ctx.stroke();
             }
