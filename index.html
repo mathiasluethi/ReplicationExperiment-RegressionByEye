@@ -64,7 +64,7 @@
                 slider.value = 0;
                 output.innerHTML = 0;
                 loadImage(task);
-                correctGraphSlope = task.m;
+                correctGraphSlope = task.m * task.sign;
             }
 
             // Load in the csv file and convert it to an object
@@ -104,6 +104,11 @@
 
                     str += line + '\r\n';
                 }
+                var hiddenElement = document.createElement('a');
+                hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(str);
+                hiddenElement.target = '_blank';
+                hiddenElement.download = 'P1.csv';
+                hiddenElement.click();
 
                 return str;
             }
@@ -136,10 +141,10 @@
             function next() {
                 data[taskIndex].answer = slider.value;
                 
-                if (taskIndex >= 5) {
+                if (slider.value == 0) {
+                    alert("Please change the slope before submitting your answer.");
+                } else if (taskIndex >= 100) {
                     let csvData = saveData();
-                    var encodedUri = encodeURI(csvData);
-                    window.open(encodedUri);
                 } else {
                     taskIndex = taskIndex + 1;
                     newGraph();

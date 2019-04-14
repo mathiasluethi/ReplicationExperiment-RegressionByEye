@@ -1,4 +1,7 @@
 ﻿id,type,sign,m,sigma,graphtype,src,isValidation,answer,error,unsignedError,index,
+1,scatter,-1,0.40,0.2,trig,data/trig/scatter/S0.1m-0.4.png,,,,,0,
+1,line,1,0.80,0.1,quad,data/quad/line/S0.1m0.8.png,,,,,1,
+1,area,1,0.20,0.2,line,data/line/area/S0.2m0.2.png,,,,,2,
 1,line,1,0.40,0.2,quad,data/P1/quad/line/S0.2m0.4.png,,,,,0,
 1,line,1,0.80,0.2,trig,data/P1/trig/line/S0.2m0.8.png,,,,,1,
 1,line,-1,0.40,0.2,line,data/P1/line/line/S0.2m-0.4.png,,,,,2,
