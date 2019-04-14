@@ -56,6 +56,7 @@
                 newGraph();
             }
 
+            // Draws a new graph with background image, resets the slider
             function newGraph() {
                 console.log(task)
                 task = data[taskIndex];
@@ -87,6 +88,25 @@
                 });
                 return await data;
             }
+
+            // Save experiment data to csv
+            function saveData() {
+                var array = typeof data != 'object' ? JSON.parse(data) : data;
+                var str = '';
+
+                for (var i = 0; i < array.length; i++) {
+                    var line = '';
+                    for (var index in array[i]) {
+                        if (line != '') line += ','
+
+                        line += array[i][index];
+                    }
+
+                    str += line + '\r\n';
+                }
+
+                return str;
+            }
             
             // Load images
             function loadImage(task) {
@@ -103,25 +123,27 @@
             slider.oninput = function() {
                 sliderValue = this.value;
                 output.innerHTML = sliderValue;
-                x1 = 0;
-                y1 = 262.5 + 150 * this.value;
-                x2 = 300
-                y2 = 262.5 + -150 * this.value;
                 if (line === "line") {
-                    drawLinearRegression(x1, x2, y1, y2);
+                    drawLinearRegression(this.value);
                 } else if (line === "quad") {
-                    drawLine();
+                    drawQuadraticRegression(this.value);
+                } else if (line === "trig") {
+                    drawTrigonometricRegression(this.value);
                 }
             }
 
             // Change the data based on input and move to the new task
             function next() {
                 data[taskIndex].answer = slider.value;
-                // data[taskIndex].error = slider.value - data[taskIndex].m;
                 
-                taskIndex = taskIndex + 1;
-                
-                newGraph();
+                if (taskIndex >= 5) {
+                    let csvData = saveData();
+                    var encodedUri = encodeURI(csvData);
+                    window.open(encodedUri);
+                } else {
+                    taskIndex = taskIndex + 1;
+                    newGraph();
+                }
             }
 
             // Change the data based on input and move to the new task
@@ -137,8 +159,13 @@
                 }
             }
 
-            // Canvas drawing logic
-            function drawLinearRegression(x1, x2, y1, y2) {
+            // Canvas drawing linear regression
+            function drawLinearRegression(m) {
+                x1 = 0;
+                y1 = 262.5 + 150 * m;
+                x2 = 300
+                y2 = 262.5 + -150 * m;
+
                 let ctx = canvas.getContext("2d");
                 ctx.clearRect(0, 0, 300, 525);
                 ctxb.drawImage(background,0,0,300,525);  
@@ -148,46 +175,36 @@
                 ctx.stroke();
             }
 
-            function fun1(x) {
-                a = sliderValue; // the curvature
-                b = correctGraphSlope; // the existing linear slope of the graph
-                c = 0; // where 0 point is
-                if (sliderValue >= 0) {
-                quadraticFunction = (Math.pow(a*x, 2)+b*x+c);
-                } else {
-                quadraticFunction = -(Math.pow(a*x, 2)-b*x+c);
-                }
-                return quadraticFunction;
-            }
+            // Canvas drawing trigonometric regression
+            function drawTrigonometricRegression(m) {
+                let ctx = canvas.getContext("2d");
+                ctx.clearRect(0, 0, 300, 525);
+                ctxb.drawImage(background,0,0,300,525);
 
-            function drawLine() {
-                var canvas = document.getElementById("myCanvas");
-                if (null==canvas || !canvas.getContext) return;
-
-                var axes={}, ctx=canvas.getContext("2d");
-                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-                ctxb.drawImage(background,0,0,ctx.canvas.width,ctx.canvas.height); 
-                // position of axes (in the middle of canvas)
-                axes.x0 = .5 + .5*canvas.width;  // x0 pixels from left to x=0
-                axes.y0 = .5 + .5*canvas.height; // y0 pixels from top to y=0
-                axes.scale = 40;                 // 40 pixels from x=0 to x=1 (length of graph, scaled up)
-                axes.doNegativeX = true;
-
-                funGraph(ctx,axes,fun1,"black",2); 
-            }
-
-            function funGraph (ctx,axes,func,color,thick) {
-                var xx, yy, dx=4, x0=axes.x0, y0=axes.y0, scale=axes.scale;
-                var iMax = Math.round((ctx.canvas.width-x0)/dx);
-                var iMin = axes.doNegativeX ? Math.round(-x0/dx) : 0;
                 ctx.beginPath();
-                ctx.lineWidth = thick;
-                ctx.strokeStyle = color;
+                ctx.moveTo(0, 262.5 - (-150 * m));
+                for (var angle = 0; angle < 180; angle += 5){
+                    var y = 262.5 - (-150 * m) * (Math.cos((Math.PI / 180) * angle))
+                    var x = (0 + angle) * 1.72;
+                    ctx.lineJoin = 'round';
+                    ctx.lineTo(x,y);
+                }
+                ctx.stroke();
+            }
 
-                for (var i=iMin;i<=iMax;i++) {
-                    xx = dx*i; yy = scale*func(xx/scale,2);
-                    if (i==iMin) ctx.moveTo(x0+xx,y0-yy);
-                    else         ctx.lineTo(x0+xx,y0-yy);
+            // Canvas drawing quadratic regression
+            function drawQuadraticRegression(m) {
+                let ctx = canvas.getContext("2d");
+                ctx.clearRect(0, 0, 300, 525);
+                ctxb.drawImage(background,0,0,300,525);
+
+                ctx.beginPath();
+                ctx.moveTo(0, 260 + m * 155);
+                for (var angle = 0; angle < 300; angle += 1){
+                    var x = angle;
+                    var y = -m * Math.pow(angle/17.2, 2) + 260 + m * 155;
+                    ctx.lineJoin = 'round';
+                    ctx.lineTo(x,y);
                 }
                 ctx.stroke();
             }
