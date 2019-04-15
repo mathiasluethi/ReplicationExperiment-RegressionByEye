@@ -41,8 +41,8 @@
   </div>
 
   <div class="buttonContainer">
-    <button type="button" onclick="previous()">Previous</button>
-    <button type="button" onclick="next()">Next</button>
+    <button id="prevButton" type="button" onclick="previous()">Previous</button>
+    <button id="nextButton" type="button" onclick="next()" disabled>Next</button>
   </div>
 
   <script type="text/javascript">
@@ -131,7 +131,7 @@
     background.src = task.src;
     // Make sure the image is loaded first otherwise nothing will draw.
     background.onload = function(){
-      ctxb.drawImage(background,0,0,300,525);
+      ctxb.drawImage(background, 0 , 0, 300, 525);
     }
   }
 
@@ -141,79 +141,74 @@
     output.innerHTML = sliderValue;
     graphtype = line;
     drawRegression(sliderValue);
+    nextButton.disabled = false;
   }
 
   // Change the data based on input and move to the new task
   function next() {
     data[taskIndex].answer = slider.value;
+    nextButton.disabled = true;
 
-    // fix to onchange/onclick
-    /*
-    if (slider.value == 0) {
-      alert("Please change the slope before submitting your answer.");
-    } else
-    */
+  if (taskIndex >= taskCount-1) {
+    let csvData = saveData();
+  } else {
+    taskIndex = taskIndex + 1;
+    newGraph();
+  }
+}
 
-    if (taskIndex >= taskCount-1) {
-      let csvData = saveData();
-    } else {
-      taskIndex = taskIndex + 1;
-      newGraph();
+// Change the data based on input and move to the new task
+function previous() {
+  if (taskIndex >= 1) {
+    data[taskIndex].answer = slider.value;
+    taskIndex = taskIndex - 1;
+    newGraph();
+  } else {
+    alert("You can't move back. This is the first task.")
+  }
+}
+
+//draw the regression
+function drawRegression(sliderValue) {
+  let ctx = canvas.getContext("2d");
+  ctx.lineWidth = 3;
+  ctx.strokeStyle = 'black';
+  ctx.clearRect(0, 0, 300, 525);
+  ctxb.drawImage(background, 0, 0, 300, 525);
+  let resolution = 100;
+  let X1, X2, Y1, Y2;
+  ctx.beginPath();
+  for (var i = 0; i < resolution; i++) {
+    X1 = scale(i, 0, resolution, 0, 1);
+    X2 = scale(i + 1, 0, resolution, 0, 1);
+    if (graphtype === "line") {
+      Y1 = 0.5 + (X1 - 0.5) * sliderValue;
+      Y2 = 0.5 + (X2 - 0.5) * sliderValue;
+    } else if (graphtype === "trig") {
+      Y1 = 0.5 - 0.5 * Math.cos(X1 * Math.PI) * sliderValue;
+      Y2 = 0.5 - 0.5 * Math.cos(X2 * Math.PI) * sliderValue;
+    } else if (graphtype === "quad") {
+      Y1 = 0.5 + sliderValue * Math.pow(X1,2) - 0.5 * sliderValue;
+      Y2 = 0.5 + sliderValue * Math.pow(X2,2) - 0.5 * sliderValue;
     }
-  }
+    ctx.moveTo(toScreenX(i/resolution),toScreenY(Y1));
+    ctx.lineTo(toScreenX((i+1)/resolution),toScreenY(Y2));
 
-  // Change the data based on input and move to the new task
-  function previous() {
-    if (taskIndex >= 1) {
-      data[taskIndex].answer = slider.value;
-      taskIndex = taskIndex - 1;
-      newGraph();
-    } else {
-      alert("You can't move back. This is the first task.")
-    }
   }
+  ctx.stroke();
+}
 
-  //draw the regression
-  function drawRegression(sliderValue) {
-    let ctx = canvas.getContext("2d");
-    ctx.lineWidth = 3;
-    ctx.strokeStyle = 'black';
-    ctx.clearRect(0, 0, 300, 525);
-    ctxb.drawImage(background, 0, 0, 300, 525);
-    let resolution = 100;
-    let X1, X2, Y1, Y2;
-    ctx.beginPath();
-    for (var i = 0; i < resolution; i++) {
-      X1 = scale(i, 0, resolution, 0, 1);
-      X2 = scale(i + 1, 0, resolution, 0, 1);
-      if (graphtype === "line") {
-        Y1 = 0.5 + (X1 - 0.5) * sliderValue;
-        Y2 = 0.5 + (X2 - 0.5) * sliderValue;
-      } else if (graphtype === "trig") {
-        Y1 = 0.5 - 0.5 * Math.cos(X1 * Math.PI) * sliderValue;
-        Y2 = 0.5 - 0.5 * Math.cos(X2 * Math.PI) * sliderValue;
-      } else if (graphtype === "quad") {
-        Y1 = 0.5 + sliderValue * Math.pow(X1,2) - 0.5 * sliderValue;
-        Y2 = 0.5 + sliderValue * Math.pow(X2,2) - 0.5 * sliderValue;
-      }
-      ctx.moveTo(toScreenX(i/resolution),toScreenY(Y1));
-      ctx.lineTo(toScreenX((i+1)/resolution),toScreenY(Y2));
+function toScreenY(dataY) {
+  return scale(dataY, 0, 1, 525 - (2 * 5)- 112.5, (2 * 5) + 112.5);
+}
+function toScreenX(dataX) {
+  return scale(dataX, 0, 1, (2*5), 300-(2*5));
+}
+const scale = (num, in_min, in_max, out_min, out_max) => {
+  return (num - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+}
 
-    }
-    ctx.stroke();
-  }
-
-  function toScreenY(dataY) {
-    return scale(dataY, 0, 1, 525 - (2 * 5)- 112.5, (2 * 5) + 112.5);
-  }
-  function toScreenX(dataX) {
-    return scale(dataX, 0, 1, (2*5), 300-(2*5));
-  }
-  const scale = (num, in_min, in_max, out_min, out_max) => {
-    return (num - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
-  }
-
-  </script>
+</script>
 
 </body>
 </html>
