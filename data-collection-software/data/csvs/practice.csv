@@ -1,0 +1,4 @@
+﻿id,type,sign,m,sigma,graphtype,src,isValidation,answer,error,unsignedError,index
+practice,scatter,-1,0.4,0.15,trig,data/practice/trig/-1/S0.15m-0.4.png,,,,,
+practice,line,1,0.8,0.1,quad,data/practice/quad/1/S0.1m0.8.png,,,,,
+practice,area,1,0.2,0.2,line,data/practice/line/1/S0.2m0.2.png,,,,,
