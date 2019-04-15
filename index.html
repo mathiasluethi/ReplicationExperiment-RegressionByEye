@@ -212,9 +212,9 @@
                 ctx.strokeStyle = 'black';
                 for (var i = 0; i<resolution; i++) {
                     X1 = scale(i, 0, resolution, 0, 1);
-                    Y1 = sliderValue*Math.pow(X1,2)+(correctGraphSlope-sliderValue)*X1 + b;
+                    Y1 = 0.5 + sliderValue*Math.pow(X1,2)-0.5*sliderValue;
                     X2 = scale(i+1, 0, resolution, 0, 1);
-                    Y2 = sliderValue*Math.pow(X2,2)+(correctGraphSlope-sliderValue)*X2 + b;
+                    Y2 = 0.5 + sliderValue*Math.pow(X2,2)-0.5*sliderValue;
                 ctx.moveTo(toScreenX(i/resolution),toScreenY(Y1));
                 ctx.lineTo(toScreenX((i+1)/resolution),toScreenY(Y2));
                 }
