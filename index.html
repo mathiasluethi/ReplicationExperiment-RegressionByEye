@@ -162,6 +162,7 @@ function previous() {
   if (taskIndex >= 1) {
     data[taskIndex].answer = slider.value;
     taskIndex = taskIndex - 1;
+    nextButton.disabled = true;
     newGraph();
   } else {
     alert("You can't move back. This is the first task.")
