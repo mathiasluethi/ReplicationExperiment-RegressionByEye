@@ -143,7 +143,7 @@
                 
                 if (slider.value == 0) {
                     alert("Please change the slope before submitting your answer.");
-                } else if (taskIndex >= 100) {
+                } else if (taskIndex >= 102) {
                     let csvData = saveData();
                 } else {
                     taskIndex = taskIndex + 1;
@@ -172,6 +172,8 @@
                 y2 = 262.5 + -150 * m;
 
                 let ctx = canvas.getContext("2d");
+                ctx.lineWidth = 3;
+                ctx.strokeStyle = 'black';
                 ctx.clearRect(0, 0, 300, 525);
                 ctxb.drawImage(background,0,0,300,525);  
                 ctx.beginPath();
@@ -183,6 +185,8 @@
             // Canvas drawing trigonometric regression
             function drawTrigonometricRegression(m) {
                 let ctx = canvas.getContext("2d");
+                ctx.lineWidth = 3;
+                ctx.strokeStyle = 'black';
                 ctx.clearRect(0, 0, 300, 525);
                 ctxb.drawImage(background,0,0,300,525);
 
@@ -199,6 +203,8 @@
 
             function drawQuadraticRegression(sliderValue) {
                 let ctx = canvas.getContext("2d");
+                ctx.lineWidth = 3;
+                ctx.strokeStyle = 'black';
                 ctx.clearRect(0, 0, 300, 525);
                 ctxb.drawImage(background,0,0,300,525);
                 let b = scale(correctGraphSlope, -1, 1, 1, 0);
@@ -208,8 +214,6 @@
                 let X2;
                 let Y2;
                 ctx.beginPath();
-                ctx.lineWidth = 3;
-                ctx.strokeStyle = 'black';
                 for (var i = 0; i<resolution; i++) {
                     X1 = scale(i, 0, resolution, 0, 1);
                     Y1 = 0.5 + sliderValue*Math.pow(X1,2)-0.5*sliderValue;
