@@ -16,6 +16,10 @@ button {
     width: 400px;
 }
 
+.history {
+    color: white;
+}
+
 /* The slider itself */
 .slider {
     -webkit-appearance: none;  /* Override default CSS styles */

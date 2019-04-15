@@ -9,6 +9,25 @@
 
     </head>
     <body>
+        <select onchange="selectParticipant()" id="participantDropdown">
+                <option value="">choose participant</option>
+                <option value="P1">P1</option>
+                <option value="P2">P2</option>
+                <option value="P3">P3</option>
+                <option value="P4">P4</option>
+                <option value="P5">P5</option>
+                <option value="P6">P6</option>
+                <option value="P7">P7</option>
+                <option value="P8">P8</option>
+                <option value="P9">P9</option>
+                <option value="P10">P10</option>
+                <option value="P11">P11</option>
+                <option value="P12">P12</option>
+                <option value="P13">P13</option>
+                <option value="P14">P14</option>
+                <option value="P15">P15</option>
+                <option value="P16">P16</option>
+                </select>
 
         <canvas id="myCanvas" width="300" height="525"></canvas>
 
@@ -45,8 +64,15 @@
             let line;
             let correctGraphSlope;
             let x0, x1, y0, y1;
+            let participant = '';
 
-            setupExperiment();
+            function selectParticipant() {
+                participant = participantDropdown.value;
+                console.log('pa: ', participant);
+                setupExperiment();
+            }
+
+            // setupExperiment();
 
             // Setup experiment
             async function setupExperiment() {
@@ -69,7 +95,7 @@
 
             // Load in the csv file and convert it to an object
             async function loadData() {
-                let data = $.get("./data/csvs/P1.csv").then(function(csv){
+                let data = $.get("./data/csvs/" + participant + ".csv").then(function(csv){
                     var lines = csv.split("\n");
                     var result = [];
                     var headers = lines[0].split(",");
@@ -104,6 +130,11 @@
 
                     str += line + '\r\n';
                 }
+                var hiddenElement = document.createElement('a');
+                hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(str);
+                hiddenElement.target = '_blank';
+                hiddenElement.download = participant + '.csv';
+                hiddenElement.click();
 
                 return str;
             }
@@ -136,10 +167,10 @@
             function next() {
                 data[taskIndex].answer = slider.value;
                 
-                if (taskIndex >= 5) {
+                if (slider.value == 0) {
+                    alert("Please change the slope before submitting your answer.");
+                } else if (taskIndex >= 102) {
                     let csvData = saveData();
-                    var encodedUri = encodeURI(csvData);
-                    window.open(encodedUri);
                 } else {
                     taskIndex = taskIndex + 1;
                     newGraph();
@@ -167,6 +198,8 @@
                 y2 = 262.5 + -150 * m;
 
                 let ctx = canvas.getContext("2d");
+                ctx.lineWidth = 3;
+                ctx.strokeStyle = 'black';
                 ctx.clearRect(0, 0, 300, 525);
                 ctxb.drawImage(background,0,0,300,525);  
                 ctx.beginPath();
@@ -178,6 +211,8 @@
             // Canvas drawing trigonometric regression
             function drawTrigonometricRegression(m) {
                 let ctx = canvas.getContext("2d");
+                ctx.lineWidth = 3;
+                ctx.strokeStyle = 'black';
                 ctx.clearRect(0, 0, 300, 525);
                 ctxb.drawImage(background,0,0,300,525);
 
@@ -194,6 +229,8 @@
 
             function drawQuadraticRegression(sliderValue) {
                 let ctx = canvas.getContext("2d");
+                ctx.lineWidth = 3;
+                ctx.strokeStyle = 'black';
                 ctx.clearRect(0, 0, 300, 525);
                 ctxb.drawImage(background,0,0,300,525);
                 let b = scale(correctGraphSlope, -1, 1, 1, 0);
@@ -203,8 +240,6 @@
                 let X2;
                 let Y2;
                 ctx.beginPath();
-                ctx.lineWidth = 3;
-                ctx.strokeStyle = 'black';
                 for (var i = 0; i<resolution; i++) {
                     X1 = scale(i, 0, resolution, 0, 1);
                     Y1 = 0.5 + sliderValue*Math.pow(X1,2)-0.5*sliderValue;
