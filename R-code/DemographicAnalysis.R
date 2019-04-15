@@ -2,8 +2,8 @@ library(tidyverse)
 import::from(cowplot, plot_grid)
 
 # Loading the original demographics file and the demographics file from during the experiment
-data_original <- read_csv('Desktop/Demographics_Original.csv')
-data <- read_csv('Desktop/Demographics.csv')
+data_original <- read_csv('Demographics_Original.csv')
+data <- read_csv('Demographics.csv')
 
 # Comparison of Gender distributions
 gender_bar_original <- ggplot(data_original, aes(Gender)) +
