@@ -91,6 +91,7 @@
       taskCount = lines.length - 1;
       console.log(taskCount);
       headers = lines[0].split(",");
+      console.log(headers);
       for(var i=1; i<lines.length; i++){
         var obj = {};
         var currentline = lines[i].split(",");
@@ -107,7 +108,7 @@
   // Save experiment data to csv
   function saveData() {
     var array = typeof data != 'object' ? JSON.parse(data) : data;
-    var str = headers;
+    var str = headers + '\r\n';
     for (var i = 0; i < array.length; i++) {
       var line = '';
       for (var index in array[i]) {
