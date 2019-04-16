@@ -14,12 +14,29 @@ let taskCount;
 let headers;
 
 function selectParticipant() {
-  main_experiment.hidden = false;
   participantDropdown.hidden = true;
+  practice_screen.hidden = false;
   participant = participantDropdown.value;
-  console.log('pa: ', participant);
+  console.log('participant: ', participant);
+}
+
+function startPractice() {
+  practiceTasks.hidden = false;
+  practice_screen.hidden = true;
+}
+
+function startMainWelcome() {
+  main_welcome_screen.hidden = false;
+  practice_screen.hidden = true;
+  practiceTasks.hidden = true;
+}
+
+function startMain(){
+  main_welcome_screen.hidden = true;
+  main_experiment.hidden = false;
   setupExperiment();
 }
+
 
 // Setup experiment
 async function setupExperiment() {
@@ -105,11 +122,21 @@ function next() {
   nextButton.disabled = true;
 
   if (taskIndex >= taskCount-1) {
-    let csvData = saveData();
+    finishScreen();
   } else {
     taskIndex = taskIndex + 1;
     newGraph();
   }
+}
+
+//Last screen, saving
+function finishScreen(){
+  main_experiment.hidden=true;
+  goodbyeScreen.hidden = false;
+}
+
+function screenSaveData(){
+  let csvData = saveData();
 }
 
 // Change the data based on input and move to the new task
@@ -128,7 +155,7 @@ function previous() {
 function drawRegression(sliderValue) {
   let ctx = canvas.getContext("2d");
   ctx.lineWidth = 3;
-  ctx.strokeStyle = 'black';
+  ctx.strokeStyle = 'blue';
   ctx.clearRect(0, 0, 300, 525);
   ctxb.drawImage(background, 0, 0, 300, 525);
   let resolution = 100;

@@ -3,10 +3,8 @@
 <head>
   <meta charset="utf-8">
   <title>Replication study</title>
-
   <link rel="stylesheet" href="styles.css"/>
-
-
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 </head>
 <body>
   <select onchange="selectParticipant()" id="participantDropdown">
@@ -28,23 +26,75 @@
     <option value="P15">P15</option>
     <option value="P16">P16</option>
   </select>
-  <div  id = "main_experiment" hidden>
+  <!--Welcome screen-->
+  <div class="jumbotron" id="practice_screen" hidden>
+    <h1 class="display-4">Welcome to the study!</h1>
+    <p class="lead">Thank you for the participantion in our experiment!</p>
+    <hr class="my-4">
+    <p>Please listen to the instructions and, once instructed, click on the button below to start practice tasks.</p>
+    <p class="lead">
+      <a class="btn btn-primary btn-lg" style="color:white" onclick="startPractice()" role="button">Start the practice</a>
+    </p>
+  </div>
+
+  <!--Practice tasks-->
+  <div  id = "practiceTasks" class="col-xs-1" align="center" hidden>
+    <h3>Adjust the slider </h3>
+    <canvas id="practiveMyCanvas" width="300" height="525"></canvas>
+    <div class="history" id="practive_m_value" hidden>
+      <span>m = </span>
+      <span id="demo"></span>
+    </div>
+    <div class="slidecontainer" id="practiceSlideContainer" >
+      <input type="range" min="-1" max="1" step="0.01" value="0" class="slider" id="practiveMyRange">
+    </div>
+    <div class="buttonContainer" id="practiceButtonContainer" >
+      <button id="practivePrevButton" class = "btn btn-primary" type="button" onclick="previous()">Previous</button>
+      <button id="practiveNextButton" class = "btn btn-primary" type="button" onclick="next()" disabled>Next</button>
+<!--testing-->
+      <button id="start" class = "btn btn-primary" type="button" onclick="startMainWelcome()">Start</button>
+  <!--testing-->
+    </div>
+  </div>
+
+<!--Main experiment welcome screen-->
+<div class="jumbotron" id="main_welcome_screen" hidden>
+  <p class="lead">Thank you for completing the practice tasks.</p>
+  <hr class="my-4">
+  <p>Please raise your hand for further instructions and, once instructed, click on the button below to start the main experiment.</p>
+  <p class="lead">
+    <a class="btn btn-primary btn-lg"  style="color:white" onclick="startMain()" role="button">Start the main experiment</a>
+  </p>
+</div>
+
+<!--Main experiment-->
+  <div  id = "main_experiment" class="col-xs-1" align="center" hidden>
     <h3>Adjust the slider </h3>
     <canvas id="myCanvas" width="300" height="525"></canvas>
-
     <div class="history" id="m_value" hidden>
       <span>m = </span>
       <span id="demo"></span>
     </div>
-
     <div class="slidecontainer" id="slideContainer" >
       <input type="range" min="-1" max="1" step="0.01" value="0" class="slider" id="myRange">
     </div>
     <div class="buttonContainer" id="buttonContainer" >
-      <button id="prevButton" type="button" onclick="previous()">Previous</button>
-      <button id="nextButton" type="button" onclick="next()" disabled>Next</button>
+      <button id="prevButton" class = "btn btn-primary" type="button" onclick="previous()">Previous</button>
+      <button id="nextButton" class = "btn btn-primary" type="button" onclick="next()" disabled>Next</button>
     </div>
   </div>
+
+  <!--Main experiment welcome screen-->
+  <div class="jumbotron" id="goodbyeScreen" hidden>
+    <p class="lead">Thank you for participating in out experiment!</p>
+    <hr class="my-4">
+    <p>Please raise your hand to receive the compensation and do not press any buttons.</p>
+    <p class="lead">
+      <a class="btn btn-danger btn-lg"  style="color:white" onclick="screenSaveData()" role="button">(do not press) Save the data</a>
+    </p>
+  </div>
+
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
   <script type="text/javascript" src="main.js"></script>
 </body>
