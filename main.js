@@ -23,6 +23,7 @@ function selectParticipant() {
 function startPractice() {
   practiceTasks.hidden = false;
   practice_screen.hidden = true;
+  setupPractice();
 }
 
 function startMainWelcome() {
@@ -77,6 +78,7 @@ async function loadData() {
   return await data;
 }
 
+
 // Save experiment data to csv
 function saveData() {
   var array = typeof data != 'object' ? JSON.parse(data) : data;
@@ -87,7 +89,7 @@ function saveData() {
       if (line != '') line += ','
       line += array[i][index];
     }
-    str += line + '\r\n';
+    str += line + '\n';
   }
   var hiddenElement = document.createElement('a');
   hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(str);
@@ -134,7 +136,6 @@ function finishScreen(){
   main_experiment.hidden=true;
   goodbyeScreen.hidden = false;
 }
-
 function screenSaveData(){
   let csvData = saveData();
 }
@@ -180,6 +181,7 @@ function drawRegression(sliderValue) {
   }
   ctx.stroke();
 }
+
 
 function toScreenY(dataY) {
   return scale(dataY, 0, 1, 525 - (2 * 5)- 112.5, (2 * 5) + 112.5);
