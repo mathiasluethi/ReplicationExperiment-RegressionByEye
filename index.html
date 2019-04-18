@@ -26,6 +26,7 @@
     <option value="P15">P15</option>
     <option value="P16">P16</option>
   </select>
+
   <!--Welcome screen-->
   <div class="jumbotron" id="practice_screen" hidden>
     <h1 class="display-4">Welcome to the study!</h1>
@@ -35,26 +36,6 @@
     <p class="lead">
       <a class="btn btn-primary btn-lg" style="color:white" onclick="startPractice()" role="button">Start the practice</a>
     </p>
-  </div>
-
-  <!--Practice tasks-->
-  <div  id = "practiceTasks" class="col-xs-1" align="center" hidden>
-    <h3>Adjust the slider </h3>
-    <canvas id="practiveMyCanvas" width="300" height="525"></canvas>
-    <div class="history" id="practive_m_value" hidden>
-      <span>m = </span>
-      <span id="demo"></span>
-    </div>
-    <div class="slidecontainer" id="practiceSlideContainer" >
-      <input type="range" min="-1" max="1" step="0.01" value="0" class="slider" id="practiveMyRange">
-    </div>
-    <div class="buttonContainer" id="practiceButtonContainer" >
-      <button id="practivePrevButton" class = "btn btn-primary" type="button" onclick="previous()">Previous</button>
-      <button id="practiveNextButton" class = "btn btn-primary" type="button" onclick="next()" disabled>Next</button>
-<!--testing-->
-      <button id="start" class = "btn btn-primary" type="button" onclick="startMainWelcome()">Start</button>
-  <!--testing-->
-    </div>
   </div>
 
 <!--Main experiment welcome screen-->
@@ -68,7 +49,7 @@
 </div>
 
 <!--Main experiment-->
-  <div  id = "main_experiment" class="col-xs-1" align="center" hidden>
+  <div  id = "main_experiment" class="col-xs-1" hidden>
     <h3>Adjust the slider </h3>
     <canvas id="myCanvas" width="300" height="525"></canvas>
     <div class="history" id="m_value" hidden>

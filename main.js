@@ -4,6 +4,7 @@ let canvas = document.getElementById("myCanvas");
 ctxb = canvas.getContext("2d");
 output.innerHTML = slider.value;
 let data;
+let inPracticeMode = false;
 let taskIndex = 0;
 let task;
 let background;
@@ -21,15 +22,15 @@ function selectParticipant() {
 }
 
 function startPractice() {
-  practiceTasks.hidden = false;
+  inPracticeMode = true;
+  main_experiment.hidden = false;
   practice_screen.hidden = true;
   setupPractice();
 }
 
 function startMainWelcome() {
   main_welcome_screen.hidden = false;
-  practice_screen.hidden = true;
-  practiceTasks.hidden = true;
+  main_experiment.hidden = true;
 }
 
 function startMain(){
@@ -38,9 +39,17 @@ function startMain(){
   setupExperiment();
 }
 
+// Setup Practice
+async function setupPractice() {
+  taskIndex = 0;
+  let d = loadPracticeData();
+  data = await d;
+  newGraph();
+}
 
 // Setup experiment
 async function setupExperiment() {
+  taskIndex = 0;
   let d = loadData();
   data = await d;
   newGraph();
@@ -48,12 +57,34 @@ async function setupExperiment() {
 
 // Draws a new graph with background image, resets the slider
 function newGraph() {
-  console.log(task);
   task = data[taskIndex];
+  console.log(task);
   line = task.graphtype;
   slider.value = 0;
   output.innerHTML = 0;
   loadImage(task);
+}
+
+// Load in the csv file and convert it to an object
+async function loadPracticeData() {
+  let data = $.get("./data/csvs/Practice.csv").then(function(csv){
+    var lines = csv.split("\n");
+    var result = [];
+    taskCount = lines.length - 1;
+    console.log(taskCount);
+    headers = lines[0].split(",");
+    console.log(headers);
+    for(var i=1; i<lines.length; i++){
+      var obj = {};
+      var currentline = lines[i].split(",");
+      for(var j=0; j<headers.length; j++){
+        obj[headers[j]] = currentline[j];
+      }
+      result.push(obj);
+    }
+    return result;
+  });
+  return await data;
 }
 
 // Load in the csv file and convert it to an object
@@ -120,18 +151,28 @@ slider.oninput = function() {
 
 // Change the data based on input and move to the new task
 function next() {
-  data[taskIndex].answer = slider.value;
-  nextButton.disabled = true;
-
-  if (taskIndex >= taskCount-1) {
-    finishScreen();
+  if (inPracticeMode == true) {
+    if (taskIndex >= taskCount-1) {
+      inPracticeMode = false;
+      startMainWelcome();
+    } else {
+      taskIndex = taskIndex + 1;
+      newGraph();
+    }
   } else {
-    taskIndex = taskIndex + 1;
-    newGraph();
+    data[taskIndex].answer = slider.value;
+    nextButton.disabled = true;
+
+    if (taskIndex >= taskCount-1) {
+      finishScreen();
+    } else {
+      taskIndex = taskIndex + 1;
+      newGraph();
+    }
   }
 }
 
-//Last screen, saving
+// Last screen, saving
 function finishScreen(){
   main_experiment.hidden=true;
   goodbyeScreen.hidden = false;
@@ -152,7 +193,7 @@ function previous() {
   }
 }
 
-//draw the regression
+// draw the regression
 function drawRegression(sliderValue) {
   let ctx = canvas.getContext("2d");
   ctx.lineWidth = 3;
@@ -181,7 +222,6 @@ function drawRegression(sliderValue) {
   }
   ctx.stroke();
 }
-
 
 function toScreenY(dataY) {
   return scale(dataY, 0, 1, 525 - (2 * 5)- 112.5, (2 * 5) + 112.5);
