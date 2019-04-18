@@ -29,6 +29,14 @@ button {
     background-color: #fff !important;
 }
 
+.button-primary {
+    width: auto !important;
+}
+
+.btn-primary:disabled {
+    background-color: #aaa !important;
+    border-color: #888 !important;
+}
 
 /* The slider itself */
 .slider {
