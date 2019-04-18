@@ -2,23 +2,33 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+    margin: 1.5em !important;
 }
 
 canvas {
     border: 1px solid #000000;
+    margin: 1em;
 }
 
 button {
     width: 5em;
 }
 
-.slidecontainer {
-    width: 400px;
+.experiment {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-.history {
-    color: white;
+.slidecontainer {
+    width: 400px;
+    margin-bottom: 1em;
 }
+
+.jumbotron {
+    background-color: #fff !important;
+}
+
 
 /* The slider itself */
 .slider {

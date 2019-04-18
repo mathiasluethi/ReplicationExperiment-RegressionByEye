@@ -42,6 +42,8 @@ function startMain(){
 // Setup Practice
 async function setupPractice() {
   taskIndex = 0;
+  nextButton.disabled = true;
+  prevButton.disabled = true;
   let d = loadPracticeData();
   data = await d;
   newGraph();
@@ -49,6 +51,8 @@ async function setupPractice() {
 
 // Setup experiment
 async function setupExperiment() {
+  nextButton.disabled = true;
+  prevButton.disabled = true;
   taskIndex = 0;
   let d = loadData();
   data = await d;
@@ -151,6 +155,9 @@ slider.oninput = function() {
 
 // Change the data based on input and move to the new task
 function next() {
+  nextButton.disabled = true;
+  prevButton.disabled = false;
+
   if (inPracticeMode == true) {
     if (taskIndex >= taskCount-1) {
       inPracticeMode = false;
@@ -161,8 +168,6 @@ function next() {
     }
   } else {
     data[taskIndex].answer = slider.value;
-    nextButton.disabled = true;
-
     if (taskIndex >= taskCount-1) {
       finishScreen();
     } else {

@@ -49,7 +49,7 @@
 </div>
 
 <!--Main experiment-->
-  <div  id = "main_experiment" class="col-xs-1" hidden>
+  <div  id ="main_experiment" class="experiment" hidden>
     <h3>Adjust the slider </h3>
     <canvas id="myCanvas" width="300" height="525"></canvas>
     <div class="history" id="m_value" hidden>
@@ -60,7 +60,7 @@
       <input type="range" min="-1" max="1" step="0.01" value="0" class="slider" id="myRange">
     </div>
     <div class="buttonContainer" id="buttonContainer" >
-      <button id="prevButton" class = "btn btn-primary" type="button" onclick="previous()">Previous</button>
+      <button id="prevButton" class = "btn btn-primary" type="button" onclick="previous()" disabled>Previous</button>
       <button id="nextButton" class = "btn btn-primary" type="button" onclick="next()" disabled>Next</button>
     </div>
   </div>
