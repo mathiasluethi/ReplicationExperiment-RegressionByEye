@@ -34,6 +34,14 @@ data <- data[!(data$id %in% invalid),]
 
 # Removing validations
 data = data[data$isValidation == 0,]
+aov 
+
+# Graph displaying within subject variation 
+data %>% 
+  ggplot(aes(x = id, y = unsignedError)) +
+  geom_boxplot()+
+  theme_bw()
+
 
 #### HYPOTHESIS 1
 data %>% 
