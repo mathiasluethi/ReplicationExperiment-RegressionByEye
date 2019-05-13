@@ -20,6 +20,14 @@ avg_signed <- group_by(data,id) %>%
 demographics$AvgUnsigned = avg_unsigned$average
 demographics$AvgSigned = avg_signed$average
 
+# Removing word degree from education to improve look on graph
+require("tm")
+data_original$Education <- removeWords(data_original$Education,"degree")
+
+#Changing F to Female and M to Male
+demographics$Gender <- ifelse(demographics$Gender=="F", 
+                        "Female", "Male")
+
 
 #Plotting gender
 gender_bar_original <- ggplot(data_original, aes(Gender)) +

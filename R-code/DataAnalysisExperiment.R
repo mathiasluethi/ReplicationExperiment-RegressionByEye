@@ -65,6 +65,9 @@ pairwise_main <-
  glht(m_main,
   linfct = mcp(graphtype = "Tukey"))
 summary(pairwise_main)
+# plot for the Tukey confidence intervals
+plot(pairwise_main)
+
 
 g= data[ (data$unsignedError > quantile(data$unsignedError , 0.25 )) & (data$unsignedError < quantile(data$unsignedError , 0.75 )) , ]
 g %>%
