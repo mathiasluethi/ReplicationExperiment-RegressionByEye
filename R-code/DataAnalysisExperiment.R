@@ -201,7 +201,7 @@ g %>%
        title = "Hypothesis 2") +
   expand_limits(x = 0, y = 0) +
   theme_black()
-
+ 
 dat %>% 
   ggplot(aes(x = error, y = index)) +
   geom_point(aes(shape = type, colour = m)) +
