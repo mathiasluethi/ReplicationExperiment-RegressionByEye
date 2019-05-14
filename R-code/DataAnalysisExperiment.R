@@ -1,9 +1,51 @@
+library(plyr)
 library(tidyverse)
 import::from(psycho, analyze)
 import::from(lmerTest,lmer,anova)
 import::from(multcomp, glht, mcp, contrMat)
-library(plyr)
 library(dplyr)
+
+# for the presentation
+theme_black <-  function(base_size = 12, base_family = "") {
+  theme_grey(base_size = base_size, base_family = base_family) %+replace%
+    theme(
+      # Specify axis options
+      axis.line = element_blank(),  
+      axis.text.x = element_text(size = base_size*0.8, color = "white", lineheight = 0.9),  
+      axis.text.y = element_text(size = base_size*0.8, color = "white", lineheight = 0.9),  
+      axis.ticks = element_line(color = "white", size  =  0.2),  
+      axis.title.x = element_text(size = base_size, color = "white", margin = margin(0, 10, 0, 0)),  
+      axis.title.y = element_text(size = base_size, color = "white", angle = 90, margin = margin(0, 10, 0, 0)),  
+      axis.ticks.length = unit(0.3, "lines"),   
+      # Specify legend options
+      legend.background=element_blank(),
+      legend.key = element_blank(),
+      legend.key.size = unit(1.2, "lines"),  
+      legend.key.height = NULL,  
+      legend.key.width = NULL,      
+      legend.text = element_text(size = base_size*0.8, color = "white"),  
+      legend.title = element_text(size = base_size*0.8, face = "bold", hjust = 0, color = "white"),  
+      legend.position = "right",  
+      legend.text.align = NULL,  
+      legend.title.align = NULL,  
+      legend.direction = "vertical",  
+      legend.box = NULL, 
+      # Specify panel options
+      panel.spacing = unit(0.5, "lines"),   
+      panel.background = element_rect(fill = "black", colour = "black"),
+      panel.border = element_blank(),
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank(),
+      # Specify facetting options
+      strip.background = element_rect(fill = "grey80", color = "grey90"),  
+      strip.text.x = element_text(size = base_size*0.8, color = "white"),  
+      strip.text.y = element_text(size = base_size*0.8, color = "white",angle = -90),  
+      # Specify plot options
+      plot.background = element_rect(fill = "black"),
+      plot.title = element_text(size = base_size*1.2, color = "white"),  
+      plot.margin = unit(rep(1, 4), "lines")
+    )
+}
 
 # Read file with all participants.
 dat <- read.csv("../data/CollectedData.csv",stringsAsFactors=FALSE)
@@ -36,7 +78,7 @@ dat <- dat[!(dat$id %in% invalid),]
 dat <- dat[dat$isValidation == 0,]
 aov 
 
-# Graph displaying within subject variation 
+# Graph displaying within subject variation for the report
 dat %>% 
   ggplot(aes(x = id, y = unsignedError)) +
   geom_boxplot() +
@@ -44,6 +86,17 @@ dat %>%
   labs(x = "Particpant ID",
        y = "Unsigned Error", 
        title = "Figure 1: Errors per participant")  # change the figure number if possible
+
+# Graph displaying within subject variation for the presentation
+dat %>% 
+  ggplot(aes(x = id, y = unsignedError)) +
+  geom_boxplot(aes(colour=id)) +
+  theme_bw() +
+  labs(x = "Particpant ID",
+       y = "Absolute Error", 
+       title = "Errors per participant: within subject variation") +
+  theme_black() +
+  theme(legend.position = "none") 
 
 #### HYPOTHESIS 1
 mean(dat$error)
@@ -61,16 +114,7 @@ dat %>%
        y = "Error",
        title = "Hypothesis 1 - no over- or underestimation",
        linetype = "Mean of error",
-       colour='Sign of the error') +
-  theme(panel.background = element_rect(fill = "black",
-                                        colour = "black"),
-        plot.background = element_rect(fill = "black"),
-        panel.border = element_blank(),
-        panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        legend.background=element_blank(),
-        legend.key = element_blank()
-  ) 
+       colour='Sign of the error') 
 
 ###plot for the report
 dat %>% 
@@ -86,6 +130,7 @@ dat %>%
        colour='Sign of the error') 
 
 #### HYPOTHESIS 2
+# plot for the report
 dat %>% 
   ggplot(aes(x = sigma, y = unsignedError)) +
   stat_summary(fun.y = mean, geom = "point") +
@@ -95,6 +140,18 @@ dat %>%
        title = "Hypothesis 2") +
   coord_flip() +
   theme_bw() 
+#plot for the presentation
+dat %>% 
+  ggplot(aes(x = sigma, y = unsignedError, colour=sigma)) +
+  stat_summary(fun.y = mean, geom = "point", size=3) +
+  stat_summary(fun.data = mean_cl_normal, geom = "errorbar", width = 0, size=1.5) +
+  labs(x = "Absolute Error",
+       y = "Bandwidth of Residuals",
+       title = "Hypothesis 2 - the larger the residuals, the larger the error") +
+  coord_flip() +
+  theme_black() +
+  theme(legend.position = "none") 
+
 
 m_regression2 <- lmer(unsignedError ~ sigma * graphtype * type + (1|id) + m, data = dat)
 anova_m_full2 <- anova(m_regression2)
@@ -114,18 +171,33 @@ summary(pairwise_main)
 # plot for the Tukey confidence intervals
 plot(pairwise_main)
 
-#plot for hypothesis 2 - errorbar
+#plot for hypothesis 3 - errorbar - paper
 g <- dat[(dat$unsignedError > quantile(dat$unsignedError, 0.25)) & (dat$unsignedError < quantile(dat$unsignedError, 0.75)), ]
 g %>%
   ggplot(aes(x = graphtype, y = unsignedError)) +
   stat_summary(fun.y = mean, geom = "point") +
   stat_summary(fun.data = mean_cl_normal, geom = "errorbar", width = 0) +
-  labs(x = "Unsigned Error",
-       y = "Trend Type",
-       title = "Hypothesis 2") +
-  expand_limits(x = 0, y = 0) +
+  labs(x = "Trend Type",
+       y = "Unsigned Error",
+       title = "Hypothesis 3") +
+  expand_limits(x = 0.02, y = 0) +
   coord_flip() +
   theme_bw()
+
+#plot for hypothesis 3 - errorbar - presentation
+g %>%
+  ggplot(aes(x = graphtype, y = unsignedError, colour = graphtype)) +
+  stat_summary(fun.y = mean, geom = "point", size = 3) +
+  stat_summary(fun.data = mean_cl_normal, geom = "errorbar", width = 0, size = 1.5) +
+  labs(y = "Absolute Error",
+       x = "Trend Type",
+       title = "Hypothesis 3 - no statistically significant effect of the trend type"
+       ) +
+  expand_limits(x = 0.02, y = 0) +
+  coord_flip() +
+  theme_black() +
+  theme(legend.position = "none") 
+ 
 
 r2 <- ddply(dat, .(type), summarize, mean = mean(unsignedError, 0.25))
 r2
@@ -164,9 +236,8 @@ plot2 <- g %>%
 grid.arrange(plot1, plot2, nrow = 1)
 
 
-
-# for the presentation
-theme_black <-  function(base_size = 12, base_family = "") {
+## presentation - should we include all of them?
+theme_black2 <-  function(base_size = 12, base_family = "") {
   theme_grey(base_size = base_size, base_family = base_family) %+replace%
     theme(
       # Specify axis options
@@ -207,16 +278,6 @@ theme_black <-  function(base_size = 12, base_family = "") {
     )
 }
 
-# id - errors
-ggplot(dat, aes(x = id, y = unsignedError)) +
-  geom_boxplot(aes(colour=id)) +
-  theme_black() +
-  theme(legend.position = "none") + 
-  labs(x = "Particpant ID",
-       y = "Unsigned Error", 
-       title = "Figure 1: Errors per participant")
-
-
 dat %>% 
   ggplot(aes(x = sigma, y = unsignedError)) +
   stat_summary(fun.y = mean, geom = "point") +
@@ -225,29 +286,19 @@ dat %>%
   labs(y = "Unsigned Error",
        x = "Bandwidth (sigma)",
        title = "Hypothesis 1") +
-  theme_black() +
+  theme_black2() +
   facet_grid(dat$type ~ dat$sigma)
 
-g %>%
-  ggplot(aes(x = type, y = unsignedError)) +
-  stat_summary(fun.y = mean, geom = "point") +
-  stat_summary(fun.data = mean_cl_normal, geom = "errorbar", width = 0) +
-  coord_flip() +
-  labs(y = "Unsigned Error", 
-       x = "Chart Type",
-       title = "Hypothesis 2") +
-  expand_limits(x = 0, y = 0) +
-  theme_black()
- 
 dat %>% 
   ggplot(aes(x = error, y = index)) +
   geom_point(aes(shape = type, colour = m)) +
-  theme_black()
+  theme_black2()
 
+#alternative for within subject comparison
 dat %>% 
   ggplot(aes(x = id, y = unsignedError)) +
   geom_boxplot() +
-  theme_black() +
+  theme_black2() +
   labs(x = "Particpant ID",
        y = "Unsigned Error", 
        title = "Figure 1: Errors per participant")
