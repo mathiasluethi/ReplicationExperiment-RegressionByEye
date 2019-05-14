@@ -12,10 +12,10 @@ dat <- read.csv("../data/CollectedData.csv",stringsAsFactors=FALSE)
 # Sign slope
 dat <- transform(dat, m = m * sign)
 
-# Calculate error and absolute error
+# Calculate error, absolute error and sign of error
 dat$error <- dat$m - dat$answer
 dat$unsignedError <- abs(dat$error)
-
+dat$signError <- sign(dat$error)
 #Rename column and adjust data types
 colnames(dat)[1] <- "id"
 dat <- dat %>% mutate(type = as.factor(type),
@@ -45,15 +45,54 @@ dat %>%
        y = "Unsigned Error", 
        title = "Figure 1: Errors per participant")  # change the figure number if possible
 
-
 #### HYPOTHESIS 1
+mean(dat$error)
+meanError <- toString(mean(dat$error))
+t.test(dat$error, mu=0, conf.level=0.99)
+
+##plot for the presentation
+dat %>% 
+  ggplot(aes(y = error, x = id)) +
+  geom_jitter(aes(colour = signError)) +
+  stat_summary(fun.y = mean, geom = "point")+
+  geom_hline(aes(linetype=meanError, yintercept = mean(dat$error)), color="orange", size=1)+
+  theme_black()+
+  labs(x = "Participant ID",
+       y = "Error",
+       title = "Hypothesis 1 - no over- or underestimation",
+       linetype = "Mean of error",
+       colour='Sign of the error') +
+  theme(panel.background = element_rect(fill = "black",
+                                        colour = "black"),
+        plot.background = element_rect(fill = "black"),
+        panel.border = element_blank(),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        legend.background=element_blank(),
+        legend.key = element_blank()
+  ) 
+
+###plot for the report
+dat %>% 
+  ggplot(aes(y = error, x = id)) +
+  geom_point(aes(colour = signError)) +
+  stat_summary(fun.y = mean, geom = "point")+
+  theme_minimal()+
+  geom_hline(aes(linetype=meanError, yintercept = mean(dat$error)), color="orange", size=1)+
+  labs(x = "Participant ID",
+       y = "Error",
+       title = "Hypothesis 1 - no over- or underestimation",
+       linetype = "Mean of error",
+       colour='Sign of the error') 
+
+#### HYPOTHESIS 2
 dat %>% 
   ggplot(aes(x = sigma, y = unsignedError)) +
   stat_summary(fun.y = mean, geom = "point") +
   stat_summary(fun.data = mean_cl_normal, geom = "errorbar", width = 0) +
   labs(x = "Unsigned Error",
        y = "Bandwidth (sigma)",
-       title = "Hypothesis 1") +
+       title = "Hypothesis 2") +
   coord_flip() +
   theme_bw() 
 
@@ -66,7 +105,7 @@ summary(results_anova2)  # summary table
 r2 <- ddply(dat, .(sigma), summarize, mean = mean(unsignedError, 0.25))
 r2
 
-#### HYPOTHESIS 2
+#### HYPOTHESIS 3
 m_main <-  update(m_regression2, .~. - sigma:graphtype:type - sigma:graphtype - sigma:type - graphtype:type)  
 pairwise_main <- 
  glht(m_main,
@@ -75,14 +114,14 @@ summary(pairwise_main)
 # plot for the Tukey confidence intervals
 plot(pairwise_main)
 
-
+#plot for hypothesis 2 - errorbar
 g <- dat[(dat$unsignedError > quantile(dat$unsignedError, 0.25)) & (dat$unsignedError < quantile(dat$unsignedError, 0.75)), ]
 g %>%
-  ggplot(aes(x = type, y = unsignedError)) +
+  ggplot(aes(x = graphtype, y = unsignedError)) +
   stat_summary(fun.y = mean, geom = "point") +
   stat_summary(fun.data = mean_cl_normal, geom = "errorbar", width = 0) +
   labs(x = "Unsigned Error",
-       y = "Chart Type",
+       y = "Trend Type",
        title = "Hypothesis 2") +
   expand_limits(x = 0, y = 0) +
   coord_flip() +
@@ -90,11 +129,6 @@ g %>%
 
 r2 <- ddply(dat, .(type), summarize, mean = mean(unsignedError, 0.25))
 r2
-
-#### HYPOTHESIS 3
-mean(dat$error)
-t.test(dat$error, mu=0, conf.level=0.99)
-
 
 
 # for the paper
