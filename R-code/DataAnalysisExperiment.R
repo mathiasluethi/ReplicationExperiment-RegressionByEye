@@ -135,8 +135,7 @@ dat %>%
 
 #### HYPOTHESIS 2
 # plot for the report
-g <- dat[(dat$unsignedError > quantile(dat$unsignedError, 0.25)) & (dat$unsignedError < quantile(dat$unsignedError, 0.75)), ]
-g %>%
+dat %>%
   ggplot(aes(x = sigma, y = unsignedError)) +
   stat_summary(fun.y = mean, geom = "point") +
   stat_summary(fun.data = mean_cl_normal, geom = "errorbar", width = 0) +
@@ -147,8 +146,7 @@ g %>%
   theme_bw() 
 
 #plot for the presentation
-g <- dat[(dat$unsignedError > quantile(dat$unsignedError, 0.25)) & (dat$unsignedError < quantile(dat$unsignedError, 0.75)), ]
-g %>%
+dat %>%
   ggplot(aes(x = sigma, y = unsignedError, colour=sigma)) +
   stat_summary(fun.y = mean, geom = "point", size=3) +
   stat_summary(fun.data = mean_cl_normal, geom = "errorbar", width = 0, size=1.5) +
@@ -178,8 +176,7 @@ summary(pairwise_main)
 plot(pairwise_main)
 
 #plot for hypothesis 3 - errorbar - paper
-g <- dat[(dat$unsignedError > quantile(dat$unsignedError, 0.25)) & (dat$unsignedError < quantile(dat$unsignedError, 0.75)), ]
-g %>%
+dat %>%
   ggplot(aes(x = graphtype, y = unsignedError)) +
   stat_summary(fun.y = mean, geom = "point") +
   stat_summary(fun.data = mean_cl_normal, geom = "errorbar", width = 0) +
@@ -193,7 +190,7 @@ g %>%
   theme_bw()
 
 #plot for hypothesis 3 - errorbar - presentation
-g %>%
+dat %>%
   ggplot(aes(x = graphtype, y = unsignedError, colour = graphtype)) +
   stat_summary(fun.y = mean, geom = "point", size = 3) +
   stat_summary(fun.data = mean_cl_normal, geom = "errorbar", width = 0, size = 1.5) +
@@ -210,7 +207,7 @@ g %>%
   theme(legend.position = "none") 
  
 
-r2 <- ddply(dat, .(type), summarize, mean = mean(unsignedError, 0.25))
+r2 <- ddply(dat, .(graphtype), summarize, mean = mean(unsignedError, 0.25))
 r2
 
 
