@@ -1,9 +1,13 @@
 library(plyr)
 library(tidyverse)
 import::from(psycho, analyze)
-import::from(lmerTest,lmer,anova)
+#import::from(lmerTest,lmer,anova)
 import::from(multcomp, glht, mcp, contrMat)
 library(dplyr)
+library(lmerTest)
+library(gridExtra)
+library(grid)
+library(lattice)
 
 # for the presentation
 theme_black <-  function(base_size = 12, base_family = "") {
@@ -168,8 +172,7 @@ r2
 #### HYPOTHESIS 3
 m_main <-  update(m_regression2, .~. - sigma:graphtype:type - sigma:graphtype - sigma:type - graphtype:type)  
 pairwise_main <- 
- glht(m_main,
-  linfct = mcp(graphtype = "Tukey"))
+ glht(m_main, linfct = mcp(graphtype = "Tukey"))
 summary(pairwise_main)
 # plot for the Tukey confidence intervals
 plot(pairwise_main)
@@ -305,3 +308,4 @@ dat %>%
   labs(x = "Particpant ID",
        y = "Unsigned Error", 
        title = "Figure 1: Errors per participant")
+
