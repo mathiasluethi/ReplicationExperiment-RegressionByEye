@@ -110,7 +110,7 @@ t.test(dat$error, mu=0, conf.level=0.99)
 ##plot for the presentation
 dat %>% 
   ggplot(aes(y = error, x = id)) +
-  geom_jitter(aes(colour = signError)) +
+  geom_jitter(aes(colour = as.factor(signError))) +
   stat_summary(fun.y = mean, geom = "point")+
   geom_hline(aes(linetype=meanError, yintercept = mean(dat$error)), color="orange", size=1)+
   theme_black()+
@@ -118,12 +118,13 @@ dat %>%
        y = "Error",
        title = "Hypothesis 1 - no over- or underestimation",
        linetype = "Mean of error",
-       colour='Sign of the error') 
+       colour='Sign of the error') +
+  scale_colour_manual(values = c("deepskyblue", "gold", "darkorchid1")) 
 
 ###plot for the report
 dat %>% 
   ggplot(aes(y = error, x = id)) +
-  geom_point(aes(colour = signError)) +
+  geom_point(aes(colour = as.factor(signError))) +
   stat_summary(fun.y = mean, geom = "point")+
   theme_minimal()+
   geom_hline(aes(linetype=meanError, yintercept = mean(dat$error)), color="orange", size=1)+
@@ -131,7 +132,8 @@ dat %>%
        y = "Error",
        title = "Hypothesis 1 - no over- or underestimation",
        linetype = "Mean of error",
-       colour='Sign of the error') 
+       colour='Sign of the error') +
+  scale_colour_manual(values = c("deepskyblue", "gold", "darkorchid1")) 
 
 #### HYPOTHESIS 2
 # plot for the report
