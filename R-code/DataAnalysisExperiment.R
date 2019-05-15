@@ -88,7 +88,7 @@ dat %>%
   geom_boxplot() +
   theme_bw() +
   labs(x = "Particpant ID",
-       y = "Unsigned Error", 
+       y = "Absolute Error", 
        title = "Figure 1: Errors per participant")  # change the figure number if possible
 
 # Graph displaying within subject variation for the presentation
@@ -141,7 +141,7 @@ dat %>%
   ggplot(aes(x = sigma, y = unsignedError)) +
   stat_summary(fun.y = mean, geom = "point") +
   stat_summary(fun.data = mean_cl_normal, geom = "errorbar", width = 0) +
-  labs(x = "Unsigned Error",
+  labs(x = "Absolute Error",
        y = "Bandwidth (sigma)",
        title = "Hypothesis 2") +
   coord_flip() +
@@ -166,7 +166,7 @@ results_anova2 <- analyze(anova_m_full2)
 print(results_anova2)  # APA text output
 summary(results_anova2)  # summary table
 
-r2 <- ddply(dat, .(sigma), summarize, mean = mean(unsignedError, 0.25))
+r2 <- ddply(dat, .(sigma), summarize, mean = mean(unsignedError))
 r2
 
 #### HYPOTHESIS 3
@@ -209,7 +209,7 @@ dat %>%
   theme(legend.position = "none") 
  
 
-r2 <- ddply(dat, .(graphtype), summarize, mean = mean(unsignedError, 0.25))
+r2 <- ddply(dat, .(graphtype), summarize, mean = mean(unsignedError))
 r2
 
 
@@ -232,12 +232,12 @@ plot1 <- dat %>%  # hyp 1
        title = "Hypothesis 1") +
   theme_bw() 
 
-plot2 <- g %>%
-  ggplot(aes(x = type, y = unsignedError)) +
+plot2 <- dat %>%
+  ggplot(aes(x = graphtype, y = unsignedError)) +
   stat_summary(fun.y = mean, geom = "point") +
   stat_summary(fun.data = mean_cl_normal, geom = "errorbar", width = 0) +
   coord_flip() +
-  labs(y = "Unsigned Error", 
+  labs(y = "Absolute Error", 
        x = "Chart Type",
        title = "Hypothesis 2") +
   expand_limits(x = 0, y = 0) +
