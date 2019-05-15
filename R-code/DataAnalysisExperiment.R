@@ -184,9 +184,11 @@ g %>%
   stat_summary(fun.y = mean, geom = "point") +
   stat_summary(fun.data = mean_cl_normal, geom = "errorbar", width = 0) +
   labs(x = "Trend Type",
-       y = "Unsigned Error",
+       y = "Absolute Error",
        title = "Hypothesis 3") +
   expand_limits(x = 0.02, y = 0) +
+  scale_x_discrete(breaks=c("line","quad","trig"),
+                   labels=c("Linear", "Quadratic", "Trigonometric"))+
   coord_flip() +
   theme_bw()
 
@@ -200,6 +202,9 @@ g %>%
        title = "Hypothesis 3 - no statistically significant effect of the trend type"
        ) +
   expand_limits(x = 0.02, y = 0) +
+  scale_x_discrete(breaks=c("line","quad","trig"),
+                   labels=c("Linear", "Quadratic", "Trigonometric"))+
+  scale_colour_manual(values = c("gold", "deepskyblue", "darkorchid1")) +
   coord_flip() +
   theme_black() +
   theme(legend.position = "none") 
