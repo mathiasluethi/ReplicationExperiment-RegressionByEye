@@ -131,7 +131,8 @@ dat %>%
 
 #### HYPOTHESIS 2
 # plot for the report
-dat %>% 
+g <- dat[(dat$unsignedError > quantile(dat$unsignedError, 0.25)) & (dat$unsignedError < quantile(dat$unsignedError, 0.75)), ]
+g %>%
   ggplot(aes(x = sigma, y = unsignedError)) +
   stat_summary(fun.y = mean, geom = "point") +
   stat_summary(fun.data = mean_cl_normal, geom = "errorbar", width = 0) +
@@ -140,8 +141,10 @@ dat %>%
        title = "Hypothesis 2") +
   coord_flip() +
   theme_bw() 
+
 #plot for the presentation
-dat %>% 
+g <- dat[(dat$unsignedError > quantile(dat$unsignedError, 0.25)) & (dat$unsignedError < quantile(dat$unsignedError, 0.75)), ]
+g %>%
   ggplot(aes(x = sigma, y = unsignedError, colour=sigma)) +
   stat_summary(fun.y = mean, geom = "point", size=3) +
   stat_summary(fun.data = mean_cl_normal, geom = "errorbar", width = 0, size=1.5) +
@@ -208,7 +211,7 @@ r2
 ggplot(dat, aes(x = id, y = unsignedError)) +
   geom_boxplot() +
   theme_bw() +
-  labs(x = "Particpant ID",
+  labs(x = "Participant ID",
        y = "Unsigned Error", 
        title = "Figure 1: Errors per participant")
 
