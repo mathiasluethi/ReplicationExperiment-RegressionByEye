@@ -2,8 +2,8 @@ library(tidyverse)
 import::from(cowplot, plot_grid)
 
 # Loading the original demographics file and the demographics file from during the experiment
-d_data_original <- read_csv('Demographics_Original.csv')
-d_data <- read_csv('Demographics.csv')
+d_data_original <- read_csv('Archive/Demographics_Original.csv')
+d_data <- read_csv('collected_data/Demographics.csv')
 
 # Removing word degree from education to improve look on graph
 require("tm")

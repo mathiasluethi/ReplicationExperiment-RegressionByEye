@@ -52,7 +52,7 @@ theme_black <-  function(base_size = 12, base_family = "") {
 }
 
 # Read file with all participants.
-dat <- read.csv("../data/CollectedData.csv",stringsAsFactors=FALSE)
+dat <- read.csv("collected_data/CollectedData.csv",stringsAsFactors=FALSE)
 
 ### PREPROCESSING
 # Sign slope
