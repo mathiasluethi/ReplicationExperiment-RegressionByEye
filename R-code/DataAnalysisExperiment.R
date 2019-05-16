@@ -127,13 +127,13 @@ dat %>%
   geom_point(aes(colour = as.factor(signError))) +
   stat_summary(fun.y = mean, geom = "point")+
   theme_minimal()+
-  geom_hline(aes(linetype=meanError, yintercept = mean(dat$error)), color="orange", size=1)+
+  geom_hline(aes(linetype=meanError, yintercept = mean(dat$error)), color="gray18", size=1)+
   labs(x = "Participant ID",
        y = "Error",
-       title = "Hypothesis 1 - no over- or underestimation",
+       title = "Hypothesis 1",
        linetype = "Mean of error",
        colour='Sign of the error') +
-  scale_colour_manual(values = c("deepskyblue", "gold", "darkorchid1")) 
+  scale_colour_manual(values = c("gray37", "gray87", "gray65")) 
 
 #### HYPOTHESIS 2
 # plot for the report
