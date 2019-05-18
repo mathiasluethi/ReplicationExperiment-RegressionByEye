@@ -7,8 +7,7 @@ This repository contains the following resources:
 * The source code of the data analysis done on the experiment results.
 
 ## Software for gathering experiment data
-Inline-style:  
-![](screenshot.png) 
+![](https://github.com/mathiasluethi/ReplicationExperiment-RegressionByEye/blob/master/screenshot.PNG) 
 
 Check out the deployed software: <https://regressiontesting.netlify.com/>  
 If you want to run the software locally you have to open chrome from the command line with the following command:  
