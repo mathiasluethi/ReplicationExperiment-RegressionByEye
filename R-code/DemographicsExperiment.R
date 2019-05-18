@@ -3,9 +3,9 @@ library(dplyr)
 import::from(cowplot, plot_grid)
 
 # Read all required files
-data <- read.csv("../data/CollectedData.csv",stringsAsFactors=FALSE)
-demographics <- read.csv("../data/Demographics.csv",stringsAsFactors=FALSE)
-data_original <- read_csv('../data/Demographics_Original.csv')
+data <- read.csv("collected_data/CollectedData.csv",stringsAsFactors=FALSE)
+demographics <- read.csv("collected_data/Demographics.csv",stringsAsFactors=FALSE)
+data_original <- read_csv('Archive/Demographics_Original.csv')
 
 # Calculate error and absolute error
 data$error <- data$m - data$answer

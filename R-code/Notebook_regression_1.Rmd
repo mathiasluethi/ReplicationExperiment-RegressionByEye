@@ -1,14 +1,14 @@
 ---
 title: "Regression by Eye - Experiment 1"
-author: Tim Brlan, Alix d’Agostino, Mathias Lüthi, Natalia Obukhova, Alexander Pfyffer,
+author: Alix d’Agostino, Tim Brlan, Mathias Lüthi, Natalia Obukhova, Alexander Pfyffer,
   Bianca Stancu
 output:
-  pdf_document: Untitled.pdf
   html_notebook: default
+  pdf_document: Untitled.pdf
 ---
 #Step 1: 
 ##Loading necessary *libraries*
-```{r}
+```{r setup, include=FALSE}
 library(plyr)
 library(tidyverse)
 import::from(psycho, analyze)
@@ -19,6 +19,7 @@ library(lmerTest)
 library(gridExtra)
 library(grid)
 library(lattice)
+import::from(cowplot, plot_grid)
 ```
 ##Loading a *theme for the presentation* plots
 ```{r}
@@ -88,7 +89,7 @@ dat <- dat %>% mutate(type = as.factor(type),
                         id = as.factor(id),
                         sigma = as.factor(sigma))
 ```
-### Remove all participants whose validations have an average unsigned error >= 0.2 and run anova on the result
+### Remove all participants whose validations have an average unsigned error >= 0.2
 ```{r}
 dat$isValidation[is.na(dat$isValidation)] <- 0
 validations <- dat[ which(dat$isValidation == '1'), ]
@@ -97,7 +98,6 @@ avg_errors_validation <- group_by(validations,id) %>%
 invalid <- (avg_errors_validation[ which(avg_errors_validation$average >= '0.2'), ])$id
 dat <- dat[!(dat$id %in% invalid),] 
 dat <- dat[dat$isValidation == 0,]
-aov
 ```
 #Step 3: 
 ## Plots construction and hypothesis checking
@@ -112,7 +112,7 @@ dat %>%
        title = "Figure 1: Errors per participant")
 ```
 ### Plot displaying within subject variation for the presentation
-```{r}
+```{r, include=FALSE}
 dat %>% 
   ggplot(aes(x = id, y = unsignedError)) +
   geom_boxplot(aes(colour=id)) +
@@ -147,7 +147,7 @@ dat %>%
   scale_colour_manual(values = c("gray37", "gray87", "gray65")) 
 ```
 ### Plot for the presentation - Hypothesis 1
-```{r}
+```{r, include=FALSE}
 dat %>% 
   ggplot(aes(y = error, x = id)) +
   geom_jitter(aes(colour = as.factor(signError))) +
@@ -185,7 +185,7 @@ dat %>%
   theme_bw() 
 ```
 ### Plot for the presentation - Hypothesis 2
-```{r}
+```{r, include=FALSE}
 dat %>%
   ggplot(aes(x = sigma, y = unsignedError, colour=sigma)) +
   stat_summary(fun.y = mean, geom = "point", size=3) +
@@ -229,7 +229,7 @@ dat %>%
   theme_bw()
 ```
 ### Plot for the presentation - Hypothesis 3
-```{r}
+```{r, include=FALSE}
 dat %>%
   ggplot(aes(x = graphtype, y = unsignedError, colour = graphtype)) +
   stat_summary(fun.y = mean, geom = "point", size = 3) +
@@ -248,4 +248,81 @@ dat %>%
 ```
 
 
+#Demographic Analysis
+### Read all required files
+```{r}
+demographics <- read.csv("collected_data/Demographics.csv",stringsAsFactors=FALSE)
+demographics_original <- read_csv('Archive/Demographics_Original.csv')
+```
 
+### Append errors to demographics from experiment and cleaning up labels
+```{r}
+avg_unsigned <- group_by(dat,id) %>%
+  dplyr::summarise(average=mean(unsignedError))
+avg_signed <- group_by(dat,id) %>%
+  dplyr::summarise(average=mean(error))
+demographics$AvgUnsigned = avg_unsigned$average
+demographics$AvgSigned = avg_signed$average
+
+# Fixing labes from education to improve look on graph
+demographics_original$Education <- ifelse(demographics_original$Education == "College degree","Col",demographics_original$Education)
+demographics_original$Education <- ifelse(demographics_original$Education == "High school degree","HS",demographics_original$Education)
+demographics_original$Education <- ifelse(demographics_original$Education == "Graduate degree","Grad",demographics_original$Education)
+demographics_original$Education <- ifelse(demographics_original$Education == "Some college","Some Col",demographics_original$Education)
+
+#Changing F to Female and M to Male
+demographics$Gender <- ifelse(demographics$Gender=="F", 
+                        "Female", "Male")
+```
+
+## Plotting gender
+```{r}
+gender_bar_original <- ggplot(demographics_original, aes(Gender)) +
+  geom_bar() +
+  theme_bw()
+gender_bar <- ggplot(demographics, aes(Gender)) +
+  geom_bar() +
+  theme_bw()
+plot_grid(gender_bar_original, gender_bar, nrow = 1)
+```
+## Plotting education
+
+```{r}
+education_bar_original <- ggplot(demographics_original, aes(Education)) +
+  geom_bar() +
+  theme_bw()
+education_bar <- ggplot(demographics, aes(Level)) +
+  geom_bar() +
+  theme_bw()
+faculty_bar <- ggplot(demographics, aes(Faculty)) +
+  geom_bar() +
+  theme_bw()
+plot_grid(education_bar_original, education_bar, faculty_bar,nrow = 1)
+```
+
+## Plotting age distributions & T-test for mean age
+```{r}
+age_density_original <- ggplot(demographics_original,aes(Age)) +
+  geom_histogram() +
+  theme_bw()
+age_density <- ggplot(demographics,aes(Age)) +
+  geom_histogram() +
+  theme_bw()
+plot_grid(age_density_original, age_density, nrow = 1)
+
+#T test for mean of age
+original_mean_age = mean(demographics_original$Age)
+experiment_age = mean(demographics$Age)
+t.test(demographics$Age, mu=original_mean_age, conf.level=0.99)
+```
+
+## Plotting graph experience
+```{r}
+graph_experience_original <- ggplot(demographics_original, aes(ExperienceGraphsCharts)) +
+  geom_bar() +
+  theme_bw()
+graph_experience <- ggplot(demographics, aes(Graphs)) +
+  geom_bar() +
+  theme_bw()
+plot_grid(graph_experience_original, graph_experience, nrow = 1)
+```
