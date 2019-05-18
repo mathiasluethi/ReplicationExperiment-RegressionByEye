@@ -1,4 +1,0 @@
-id,type,sign,m,sigma,graphtype,src,isValidation,answer,error,unsignedError,index,
-0,scatter,-1,0.40,0.15,trig,data/Practice/S0.15m-0.4.png,,,,,0,
-0,line,1,0.80,0.1,quad,data/Practice/S0.1m0.8.png,,,,,1,
-0,area,1,0.20,0.2,line,data/Practice/S0.2m0.2.png,,,,,2,
