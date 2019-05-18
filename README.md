@@ -8,11 +8,11 @@ This repository contains the following resources:
 
 ## Software for gathering experiment data
 Inline-style:  
-![alt text](screenshot.png "Final Result") 
+![](screenshot.png) 
 
 Check out the deployed software: <https://regressiontesting.netlify.com/>  
 If you want to run the software locally you have to open chrome from the command line with the following command:  
-`chrome --allow-file-access-from-files` 
+`chrome --allow-file-access-from-files`  
 After that you can simply open the index.js file.  
 
 ## Contributors
