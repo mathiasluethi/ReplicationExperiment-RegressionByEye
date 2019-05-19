@@ -1,6 +1,6 @@
 ---
 title: "Regression by Eye - Experiment 1"
-author: Alix d’Agostino, Tim Brlan, Mathias Lüthi, Natalia Obukhova, Alexander Pfyffer,
+author: Alix d'Agostino, Tim Brlan, Mathias L�thi, Natalia Obukhova, Alexander Pfyffer,
   Bianca Stancu
 output:
   html_notebook: default
@@ -65,10 +65,14 @@ theme_black <-  function(base_size = 12, base_family = "") {
 }
 ```
 #Step 2. 
-## Loading the *data*
-```{r}
+## Loading the *data*, as well as the demographic data from our and the original study
+```{r, include=FALSE}
 dat <- read.csv("collected_data/CollectedData.csv",stringsAsFactors=FALSE)
+
+demographics <- read.csv("collected_data/Demographics.csv",stringsAsFactors=FALSE)
+demographics_original <- read_csv('Archive/Demographics_Original.csv')
 ```
+
 ## Preprocessing
 ### Sign the slope m
 ```{r}
@@ -81,16 +85,10 @@ dat$unsignedError <- abs(dat$error)
 dat$signError <- sign(dat$error)
 ```
 ### Rename columns and adjust data types
-```{r}
-colnames(dat)[1] <- "id"
-dat <- dat %>% mutate(type = as.factor(type),
-                        graphtype = as.factor(graphtype),                        
-                        m = as.factor(m),
-                        id = as.factor(id),
-                        sigma = as.factor(sigma))
-```
 ### Remove all participants whose validations have an average unsigned error >= 0.2
 ```{r}
+colnames(dat)[1] <- "id"
+colnames(demographics)[1] <- "id"
 dat$isValidation[is.na(dat$isValidation)] <- 0
 validations <- dat[ which(dat$isValidation == '1'), ]
 avg_errors_validation <- group_by(validations,id) %>%
@@ -98,7 +96,16 @@ avg_errors_validation <- group_by(validations,id) %>%
 invalid <- (avg_errors_validation[ which(avg_errors_validation$average >= '0.2'), ])$id
 dat <- dat[!(dat$id %in% invalid),] 
 dat <- dat[dat$isValidation == 0,]
+
+complete_data <- left_join(dat, demographics,by = "id")
+
+dat <- dat %>% mutate(type = as.factor(type),
+                        graphtype = as.factor(graphtype),                        
+                        m = as.factor(m),
+                        id = as.factor(id),
+                        sigma = as.factor(sigma))
 ```
+
 #Step 3: 
 ## Plots construction and hypothesis checking
 ### Plot displaying within subject variation for the report
@@ -126,10 +133,17 @@ dat %>%
 ```
 ## Hypothesis 1 - no bias from over- or undershooting
 ### Calculating mean error and t-test
+### Check the difference of the error on gender 
 ```{r}
 mean(dat$error)
+
+
 meanError <- toString(mean(dat$error))
 t.test(dat$error, mu=0, conf.level=0.99)
+
+complete_data %>% 
+  group_by(Gender) %>% 
+  summarise(average = mean(error))
 ```
 ### Plot for the report - Hypothesis 1
 ```{r}
@@ -249,11 +263,6 @@ dat %>%
 
 
 #Demographic Analysis
-### Read all required files
-```{r}
-demographics <- read.csv("collected_data/Demographics.csv",stringsAsFactors=FALSE)
-demographics_original <- read_csv('Archive/Demographics_Original.csv')
-```
 
 ### Append errors to demographics from experiment and cleaning up labels
 ```{r}
