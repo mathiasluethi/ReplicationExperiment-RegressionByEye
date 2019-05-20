@@ -24,7 +24,7 @@ After that you can simply open the index.html file.
 
 ## Function  
 The following formulas were used to generate the graphs on top of the visualization  
-Line: y = 0.5 + sliderValue * (x - 0.5)  
-Quad: y = 0.5 + sliderValue * x^2 - 0.5 * sliderValue  
-Trig: y = 0.5 - 0.5 * cos(x * π) * sliderValue  
+Linear trend: y = 0.5 + sliderValue * (x - 0.5)  
+Quadratic trend: y = 0.5 + sliderValue * x^2 - 0.5 * sliderValue  
+Trigonometric trend: y = 0.5 - 0.5 * cos(x * π) * sliderValue  
 sliderValue is the participant's answer in range from -1 to 1
