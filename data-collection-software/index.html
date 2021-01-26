@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Replication study</title>
+  <link rel="stylesheet" href="styles.css"/>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+<body>
+  <select onchange="selectParticipant()" id="participantDropdown">
+    <option value="">choose participant</option>
+    <option value="P1">P1</option>
+    <option value="P2">P2</option>
+    <option value="P3">P3</option>
+    <option value="P4">P4</option>
+    <option value="P5">P5</option>
+    <option value="P6">P6</option>
+    <option value="P7">P7</option>
+    <option value="P8">P8</option>
+    <option value="P9">P9</option>
+    <option value="P10">P10</option>
+    <option value="P11">P11</option>
+    <option value="P12">P12</option>
+    <option value="P13">P13</option>
+    <option value="P14">P14</option>
+    <option value="P15">P15</option>
+    <option value="P16">P16</option>
+  </select>
+
+  <!--Welcome screen-->
+  <div class="jumbotron" id="practice_screen" hidden>
+    <h1 class="display-4">Welcome to the study!</h1>
+    <p class="lead">Thank you for the participantion in our experiment!</p>
+    <hr class="my-4">
+    <p>Please listen to the instructions and, once instructed, click on the button below to start practice tasks.</p>
+    <p class="lead">
+      <a class="btn btn-primary btn-lg" style="color:white" onclick="startPractice()" role="button">Start the practice</a>
+    </p>
+  </div>
+
+<!--Main experiment welcome screen-->
+<div class="jumbotron" id="main_welcome_screen" hidden>
+  <p class="lead">Thank you for completing the practice tasks.</p>
+  <hr class="my-4">
+  <p>Please raise your hand for further instructions and, once instructed, click on the button below to start the main experiment.</p>
+  <p class="lead">
+    <a class="btn btn-primary btn-lg"  style="color:white" onclick="startMain()" role="button">Start the main experiment</a>
+  </p>
+</div>
+
+<!--Main experiment-->
+  <div  id ="main_experiment" class="experiment" hidden>
+    <h3>Adjust the slider </h3>
+    <canvas id="myCanvas" width="300" height="525"></canvas>
+    <div class="history" id="m_value" hidden>
+      <span>m = </span>
+      <span id="demo"></span>
+    </div>
+    <div class="slidecontainer" id="slideContainer" >
+      <input type="range" min="-1" max="1" step="0.01" value="0" class="slider" id="myRange">
+    </div>
+    <div class="buttonContainer" id="buttonContainer" >
+      <button id="prevButton" class = "btn btn-primary" type="button" onclick="previous()" disabled>Previous</button>
+      <button id="nextButton" class = "btn btn-primary" type="button" onclick="next()" disabled>Next</button>
+    </div>
+  </div>
+
+  <!--Main experiment welcome screen-->
+  <div class="jumbotron" id="goodbyeScreen" hidden>
+    <p class="lead">Thank you for participating in out experiment!</p>
+    <hr class="my-4">
+    <p>Please raise your hand to receive the compensation and do not press any buttons.</p>
+    <p class="lead">
+      <a class="btn btn-danger btn-lg"  style="color:white" onclick="screenSaveData()" role="button">(do not press) Save the data</a>
+    </p>
+  </div>
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+  <script type="text/javascript" src="main.js"></script>
+</body>
+</html>

@@ -1,0 +1,337 @@
+---
+title: "Regression by Eye - Experiment 1"
+author: Alix d'Agostino, Tim Brlan, Mathias Lüthi, Natalia Obukhova, Alexander Pfyffer,
+  Bianca Stancu
+output:
+  html_notebook: default
+  pdf_document: Untitled.pdf
+---
+#Step 1: 
+##Loading necessary *libraries*
+```{r setup, include=FALSE}
+library(plyr)
+library(tidyverse)
+import::from(psycho, analyze)
+#import::from(lmerTest,lmer,anova)
+import::from(multcomp, glht, mcp, contrMat)
+library(dplyr)
+library(lmerTest)
+library(gridExtra)
+library(grid)
+library(lattice)
+import::from(cowplot, plot_grid)
+```
+##Loading a *theme for the presentation* plots
+```{r}
+theme_black <-  function(base_size = 12, base_family = "") {
+  theme_grey(base_size = base_size, base_family = base_family) %+replace%
+    theme(
+      # Specify axis options
+      axis.line = element_blank(),  
+      axis.text.x = element_text(size = base_size*0.8, color = "white", lineheight = 0.9),  
+      axis.text.y = element_text(size = base_size*0.8, color = "white", lineheight = 0.9),  
+      axis.ticks = element_line(color = "white", size  =  0.2),  
+      axis.title.x = element_text(size = base_size, color = "white", margin = margin(0, 10, 0, 0)),  
+      axis.title.y = element_text(size = base_size, color = "white", angle = 90, margin = margin(0, 10, 0, 0)),  
+      axis.ticks.length = unit(0.3, "lines"),   
+      # Specify legend options
+      legend.background=element_blank(),
+      legend.key = element_blank(),
+      legend.key.size = unit(1.2, "lines"),  
+      legend.key.height = NULL,  
+      legend.key.width = NULL,      
+      legend.text = element_text(size = base_size*0.8, color = "white"),  
+      legend.title = element_text(size = base_size*0.8, face = "bold", hjust = 0, color = "white"),  
+      legend.position = "right",  
+      legend.text.align = NULL,  
+      legend.title.align = NULL,  
+      legend.direction = "vertical",  
+      legend.box = NULL, 
+      # Specify panel options
+      panel.spacing = unit(0.5, "lines"),   
+      panel.background = element_rect(fill = "black", colour = "black"),
+      panel.border = element_blank(),
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank(),
+      # Specify facetting options
+      strip.background = element_rect(fill = "grey80", color = "grey90"),  
+      strip.text.x = element_text(size = base_size*0.8, color = "white"),  
+      strip.text.y = element_text(size = base_size*0.8, color = "white",angle = -90),  
+      # Specify plot options
+      plot.background = element_rect(fill = "black"),
+      plot.title = element_text(size = base_size*1.2, color = "white"),  
+      plot.margin = unit(rep(1, 4), "lines")
+    )
+}
+```
+#Step 2. 
+## Loading the *data*, as well as the demographic data from our and the original study
+```{r, include=FALSE}
+dat <- read.csv("collected_data/CollectedData.csv",stringsAsFactors=FALSE)
+
+demographics <- read.csv("collected_data/Demographics.csv",stringsAsFactors=FALSE)
+demographics_original <- read_csv('Archive/Demographics_Original.csv')
+```
+
+## Preprocessing
+### Sign the slope m
+```{r}
+dat <- transform(dat, m = m * sign)
+```
+### Calculate error, absolute error and sign of error
+```{r}
+dat$error <- dat$m - dat$answer
+dat$unsignedError <- abs(dat$error)
+dat$signError <- sign(dat$error)
+```
+### Rename columns and adjust data types
+### Remove all participants whose validations have an average unsigned error >= 0.2
+```{r}
+colnames(dat)[1] <- "id"
+colnames(demographics)[1] <- "id"
+dat$isValidation[is.na(dat$isValidation)] <- 0
+validations <- dat[ which(dat$isValidation == '1'), ]
+avg_errors_validation <- group_by(validations,id) %>%
+  dplyr::summarise(average = mean(unsignedError))
+invalid <- (avg_errors_validation[ which(avg_errors_validation$average >= '0.2'), ])$id
+dat <- dat[!(dat$id %in% invalid),] 
+dat <- dat[dat$isValidation == 0,]
+
+complete_data <- left_join(dat, demographics,by = "id")
+
+dat <- dat %>% mutate(type = as.factor(type),
+                        graphtype = as.factor(graphtype),                        
+                        m = as.factor(m),
+                        id = as.factor(id),
+                        sigma = as.factor(sigma))
+```
+
+#Step 3: 
+## Plots construction and hypothesis checking
+### Plot displaying within subject variation for the report
+```{r}
+dat %>% 
+  ggplot(aes(x = id, y = unsignedError)) +
+  geom_boxplot() +
+  theme_bw() +
+  labs(x = "Particpant ID",
+       y = "Absolute Error", 
+       title = "Figure 1: Errors per participant")
+```
+### Plot displaying within subject variation for the presentation
+```{r, include=FALSE}
+dat %>% 
+  ggplot(aes(x = id, y = unsignedError)) +
+  geom_boxplot(aes(colour=id)) +
+  theme_bw() +
+  labs(x = "Particpant ID",
+       y = "Absolute Error", 
+       title = "Errors per participant: within subject variation") +
+  theme_black() +
+  theme(legend.position = "none") 
+
+```
+## Hypothesis 1 - no bias from over- or undershooting
+### Calculating mean error and t-test
+### Check the difference of the error on gender 
+```{r}
+mean(dat$error)
+
+
+meanError <- toString(mean(dat$error))
+t.test(dat$error, mu=0, conf.level=0.99)
+
+complete_data %>% 
+  group_by(Gender) %>% 
+  summarise(average = mean(error))
+```
+### Plot for the report - Hypothesis 1
+```{r}
+dat %>% 
+  ggplot(aes(y = error, x = id)) +
+  geom_point(aes(colour = as.factor(signError))) +
+  stat_summary(fun.y = mean, geom = "point")+
+  theme_minimal()+
+  geom_hline(aes(linetype=meanError, yintercept = mean(dat$error)), color="gray18", size=1)+
+  labs(x = "Participant ID",
+       y = "Error",
+       title = "Hypothesis 1",
+       linetype = "Mean of error",
+       colour='Sign of the error') +
+  scale_colour_manual(values = c("gray37", "gray87", "gray65")) 
+```
+### Plot for the presentation - Hypothesis 1
+```{r, include=FALSE}
+dat %>% 
+  ggplot(aes(y = error, x = id)) +
+  geom_jitter(aes(colour = as.factor(signError))) +
+  stat_summary(fun.y = mean, geom = "point")+
+  geom_hline(aes(linetype=meanError, yintercept = mean(dat$error)), color="orange", size=1)+
+  theme_black()+
+  labs(x = "Participant ID",
+       y = "Error",
+       title = "Hypothesis 1 - no over- or underestimation",
+       linetype = "Mean of error",
+       colour='Sign of the error') +
+  scale_colour_manual(values = c("deepskyblue", "gold", "darkorchid1")) 
+```
+## Hypothesis 2 - the larger the residuals, the larger the error in estimations
+### ANOVA analysis and means
+```{r}
+m_regression2 <- lmer(unsignedError ~ sigma * graphtype * type + (1|id) + m, data = dat)
+anova_m_full2 <- anova(m_regression2)
+results_anova2 <- analyze(anova_m_full2)
+print(results_anova2)  # APA text output
+summary(results_anova2)  # summary table
+r2 <- ddply(dat, .(sigma), summarize, mean = mean(unsignedError))
+r2
+```
+### Plot for the report - Hypothesis 2
+```{r}
+dat %>%
+  ggplot(aes(x = sigma, y = unsignedError)) +
+  stat_summary(fun.y = mean, geom = "point") +
+  stat_summary(fun.data = mean_cl_normal, geom = "errorbar", width = 0) +
+  labs(x = "Absolute Error",
+       y = "Bandwidth (sigma)",
+       title = "Hypothesis 2") +
+  coord_flip() +
+  theme_bw() 
+```
+### Plot for the presentation - Hypothesis 2
+```{r, include=FALSE}
+dat %>%
+  ggplot(aes(x = sigma, y = unsignedError, colour=sigma)) +
+  stat_summary(fun.y = mean, geom = "point", size=3) +
+  stat_summary(fun.data = mean_cl_normal, geom = "errorbar", width = 0, size=1.5) +
+  labs(x = "Absolute Error",
+       y = "Bandwidth of Residuals",
+       title = "Hypothesis 2 - the larger the residuals, the larger the error") +
+  coord_flip() +
+  theme_black() +
+  theme(legend.position = "none") 
+```
+## Hypothesis 3 - the type of trend has no statistically significant effect on participantsâ€™ estimation
+### Tukey analysis and plot
+```{r}
+m_main <-  update(m_regression2, .~. - sigma:graphtype:type - sigma:graphtype - sigma:type - graphtype:type)  
+pairwise_main <- 
+ glht(m_main, linfct = mcp(graphtype = "Tukey"))
+summary(pairwise_main)
+
+plot(pairwise_main)
+```
+### Means for hypothesis 3
+```{r}
+r2 <- ddply(dat, .(graphtype), summarize, mean = mean(unsignedError))
+r2
+```
+
+### Plot for the report - Hypothesis 3
+```{r}
+dat %>%
+  ggplot(aes(x = graphtype, y = unsignedError)) +
+  stat_summary(fun.y = mean, geom = "point") +
+  stat_summary(fun.data = mean_cl_normal, geom = "errorbar", width = 0) +
+  labs(x = "Trend Type",
+       y = "Absolute Error",
+       title = "Hypothesis 3") +
+  expand_limits(x = 0.02, y = 0) +
+  scale_x_discrete(breaks=c("line","quad","trig"),
+                   labels=c("Linear", "Quadratic", "Trigonometric"))+
+  coord_flip() +
+  theme_bw()
+```
+### Plot for the presentation - Hypothesis 3
+```{r, include=FALSE}
+dat %>%
+  ggplot(aes(x = graphtype, y = unsignedError, colour = graphtype)) +
+  stat_summary(fun.y = mean, geom = "point", size = 3) +
+  stat_summary(fun.data = mean_cl_normal, geom = "errorbar", width = 0, size = 1.5) +
+  labs(y = "Absolute Error",
+       x = "Trend Type",
+       title = "Hypothesis 3 - no statistically significant effect of the trend type"
+       ) +
+  expand_limits(x = 0.02, y = 0) +
+  scale_x_discrete(breaks=c("line","quad","trig"),
+                   labels=c("Linear", "Quadratic", "Trigonometric"))+
+  scale_colour_manual(values = c("gold", "deepskyblue", "darkorchid1")) +
+  coord_flip() +
+  theme_black() +
+  theme(legend.position = "none") 
+```
+
+
+#Demographic Analysis
+
+### Append errors to demographics from experiment and cleaning up labels
+```{r}
+avg_unsigned <- group_by(dat,id) %>%
+  dplyr::summarise(average=mean(unsignedError))
+avg_signed <- group_by(dat,id) %>%
+  dplyr::summarise(average=mean(error))
+demographics$AvgUnsigned = avg_unsigned$average
+demographics$AvgSigned = avg_signed$average
+
+# Fixing labes from education to improve look on graph
+demographics_original$Education <- ifelse(demographics_original$Education == "College degree","Col",demographics_original$Education)
+demographics_original$Education <- ifelse(demographics_original$Education == "High school degree","HS",demographics_original$Education)
+demographics_original$Education <- ifelse(demographics_original$Education == "Graduate degree","Grad",demographics_original$Education)
+demographics_original$Education <- ifelse(demographics_original$Education == "Some college","Some Col",demographics_original$Education)
+
+#Changing F to Female and M to Male
+demographics$Gender <- ifelse(demographics$Gender=="F", 
+                        "Female", "Male")
+```
+
+## Plotting gender
+```{r}
+gender_bar_original <- ggplot(demographics_original, aes(Gender)) +
+  geom_bar() +
+  theme_bw()
+gender_bar <- ggplot(demographics, aes(Gender)) +
+  geom_bar() +
+  theme_bw()
+plot_grid(gender_bar_original, gender_bar, nrow = 1)
+```
+## Plotting education
+
+```{r}
+education_bar_original <- ggplot(demographics_original, aes(Education)) +
+  geom_bar() +
+  theme_bw()
+education_bar <- ggplot(demographics, aes(Level)) +
+  geom_bar() +
+  theme_bw()
+faculty_bar <- ggplot(demographics, aes(Faculty)) +
+  geom_bar() +
+  theme_bw()
+plot_grid(education_bar_original, education_bar, faculty_bar,nrow = 1)
+```
+
+## Plotting age distributions & T-test for mean age
+```{r}
+age_density_original <- ggplot(demographics_original,aes(Age)) +
+  geom_histogram() +
+  theme_bw()
+age_density <- ggplot(demographics,aes(Age)) +
+  geom_histogram() +
+  theme_bw()
+plot_grid(age_density_original, age_density, nrow = 1)
+
+#T test for mean of age
+original_mean_age = mean(demographics_original$Age)
+experiment_age = mean(demographics$Age)
+t.test(demographics$Age, mu=original_mean_age, conf.level=0.99)
+```
+
+## Plotting graph experience
+```{r}
+graph_experience_original <- ggplot(demographics_original, aes(ExperienceGraphsCharts)) +
+  geom_bar() +
+  theme_bw()
+graph_experience <- ggplot(demographics, aes(Graphs)) +
+  geom_bar() +
+  theme_bw()
+plot_grid(graph_experience_original, graph_experience, nrow = 1)
+```

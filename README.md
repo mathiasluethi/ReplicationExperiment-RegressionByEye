@@ -1,37 +1,30 @@
-## Welcome to GitHub Pages
+# Experiment Replication - Regression by Eye: Estimating Trends in Bivariate Visualizations
+This Project was done for the Quantitive Methods in HCI course during the spring semester 2019 at the University of Zurich.  
 
-You can use the [editor on GitHub](https://github.com/mathiasluethi/ReplicationExperiment-RegressionByEye/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
+This repository contains the following resources:  
+* The source code of the software used for gathering experiment data.
+* The generated visualizations that were used in the experiment.
+* The source code of the data analysis done on the experiment results.
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+## Software for gathering experiment data
+![](https://github.com/mathiasluethi/ReplicationExperiment-RegressionByEye/blob/master/screenshot.PNG) 
 
-### Markdown
+Check out the deployed software: <https://regressiontesting.netlify.com/>  
+If you want to run the software locally you have to open chrome from the command line with the following command:  
+`chrome --allow-file-access-from-files`  
+After that you can simply open the index.html file.  
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+## Contributors
+* __Alexander -__ <https://github.com/Vollkorn01>
+* __Alix -__ <https://github.com/dagostix>
+* __Bianca -__ <https://github.com/bianca-stancu>
+* __Mathias -__ <https://github.com/mathiasluethi>
+* __Natasha -__ <https://github.com/natalia-obukhova>
+* __Tim -__ <https://github.com/Tbrlan>
 
-```markdown
-Syntax highlighted code block
-
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/mathiasluethi/ReplicationExperiment-RegressionByEye/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+## Function  
+The following formulas were used to generate the graphs on top of the visualization  
+Linear trend: y = 0.5 + sliderValue * (x - 0.5)  
+Quadratic trend: y = 0.5 + sliderValue * x^2 - 0.5 * sliderValue  
+Trigonometric trend: y = 0.5 - 0.5 * cos(x * π) * sliderValue  
+sliderValue is the participant's answer in range from -1 to 1
